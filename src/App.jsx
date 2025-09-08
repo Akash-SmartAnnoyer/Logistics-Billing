@@ -6,7 +6,7 @@ import './index.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Logistics-Billing">
       <div className="min-h-screen bg-gradient-to-br from-milky-50 via-white to-milky-100">
         <Toaster 
           position="top-right"

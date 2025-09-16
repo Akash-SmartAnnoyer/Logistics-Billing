@@ -2,14 +2,115 @@ import React, { useState } from 'react';
 import './auth/auth.css';
 
 const Orders = () => {
-  const [activeTab, setActiveTab] = useState('enquiries');
+  const [activeTab, setActiveTab] = useState('estimates');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEstimateModal, setShowEstimateModal] = useState(false);
+  const [showEstimateEditModal, setShowEstimateEditModal] = useState(false);
+  const [showEstimatePreviewModal, setShowEstimatePreviewModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedEstimate, setSelectedEstimate] = useState(null);
+  const [editingEstimate, setEditingEstimate] = useState(null);
   const [deletingOrder, setDeletingOrder] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+
+  // Order creation state
+  const [orderForm, setOrderForm] = useState({
+    customerName: '',
+    customerPhone: '',
+    customerEmail: '',
+    customerAddress: '',
+    isExistingCustomer: false,
+    products: [],
+    subtotal: 0,
+    discount: 0,
+    discountType: 'percentage', // 'percentage' or 'fixed'
+    totalAmount: 0,
+    notes: '',
+    expectedDelivery: '',
+    selectedProduct: null,
+    selectedQuantity: 0
+  });
+
+  // Estimate state
+  const [estimateForm, setEstimateForm] = useState({
+    customerName: '',
+    customerPhone: '',
+    customerEmail: '',
+    customerAddress: '',
+    isExistingCustomer: false,
+    products: [],
+    subtotal: 0,
+    discount: 0,
+    discountType: 'percentage',
+    totalAmount: 0,
+    notes: '',
+    validUntil: '',
+    estimateNumber: `EST-${Date.now()}`,
+    selectedProduct: null,
+    selectedQuantity: 0
+  });
+
+  // Available products for order creation
+  const availableProducts = [
+    { id: 'P-001', name: 'Teak Wood Planks', category: 'Hardwood', unit: 'CFT', price: 450, stock: 150 },
+    { id: 'P-002', name: 'Pine Wood Logs', category: 'Softwood', unit: 'CFT', price: 300, stock: 200 },
+    { id: 'P-003', name: 'Oak Wood Beams', category: 'Hardwood', unit: 'CFT', price: 600, stock: 25 },
+    { id: 'P-004', name: 'Cedar Wood Panels', category: 'Softwood', unit: 'SQFT', price: 80, stock: 500 },
+    { id: 'P-005', name: 'Mahogany Planks', category: 'Hardwood', unit: 'CFT', price: 800, stock: 10 }
+  ];
+
+  // Existing customers database
+  const existingCustomers = [
+    { id: 'C-001', name: 'ABC Construction', phone: '+91 98765 43210', email: 'abc@construction.com', address: '123 Construction St, Mumbai' },
+    { id: 'C-002', name: 'XYZ Builders', phone: '+91 98765 43211', email: 'xyz@builders.com', address: '456 Builder Ave, Delhi' },
+    { id: 'C-003', name: 'DEF Developers', phone: '+91 98765 43212', email: 'def@developers.com', address: '789 Developer Rd, Bangalore' }
+  ];
+
+  // Estimate management state
+  const [estimates, setEstimates] = useState([
+    {
+      id: 'EST-001',
+      customer: 'ABC Construction',
+      phone: '+91 98765 43210',
+      email: 'abc@construction.com',
+      address: '123 Construction St, Mumbai',
+      products: [
+        { name: 'Teak Wood Planks', quantity: 50, price: 450, totalPrice: 22500 },
+        { name: 'Pine Wood Logs', quantity: 30, price: 300, totalPrice: 9000 }
+      ],
+      subtotal: 31500,
+      discount: 5,
+      discountType: 'percentage',
+      totalAmount: 29925,
+      status: 'Pending',
+      estimateDate: '2024-01-10',
+      validUntil: '2024-01-25',
+      notes: 'High priority order',
+      isExistingCustomer: true
+    },
+    {
+      id: 'EST-002',
+      customer: 'XYZ Builders',
+      phone: '+91 98765 43211',
+      email: 'xyz@builders.com',
+      address: '456 Builder Ave, Delhi',
+      products: [
+        { name: 'Oak Wood Beams', quantity: 20, price: 600, totalPrice: 12000 }
+      ],
+      subtotal: 12000,
+      discount: 0,
+      discountType: 'percentage',
+      totalAmount: 12000,
+      status: 'Approved',
+      estimateDate: '2024-01-09',
+      validUntil: '2024-01-24',
+      notes: 'Ready for conversion',
+      isExistingCustomer: true
+    }
+  ]);
 
   // Mock data for orders
   const enquiries = [
@@ -191,11 +292,366 @@ const Orders = () => {
 
   const getCurrentOrders = () => {
     switch (activeTab) {
-      case 'enquiries': return enquiries;
+      case 'estimates': return estimates;
       case 'active': return activeOrders;
       case 'completed': return completedOrders;
       default: return [];
     }
+  };
+
+  // Customer detection by phone number
+  const detectCustomer = (phone, formType = 'order') => {
+    const customer = existingCustomers.find(c => c.phone === phone);
+    if (customer) {
+      const updateData = {
+        customerName: customer.name,
+        customerPhone: customer.phone,
+        customerEmail: customer.email,
+        customerAddress: customer.address,
+        isExistingCustomer: true
+      };
+      
+      if (formType === 'estimate') {
+        setEstimateForm(prev => ({ ...prev, ...updateData }));
+      } else {
+        setOrderForm(prev => ({ ...prev, ...updateData }));
+      }
+      return customer;
+    } else {
+      const resetData = {
+        customerName: '',
+        customerEmail: '',
+        customerAddress: '',
+        isExistingCustomer: false
+      };
+      
+      if (formType === 'estimate') {
+        setEstimateForm(prev => ({ ...prev, ...resetData }));
+      } else {
+        setOrderForm(prev => ({ ...prev, ...resetData }));
+      }
+      return null;
+    }
+  };
+
+  // Add product to form
+  const addProductToForm = (productId, quantity, formType = 'order') => {
+    const product = availableProducts.find(p => p.id === productId);
+    if (product && quantity > 0) {
+      const currentForm = formType === 'estimate' ? estimateForm : orderForm;
+      const setForm = formType === 'estimate' ? setEstimateForm : setOrderForm;
+      
+      const existingProductIndex = currentForm.products.findIndex(p => p.id === productId);
+      if (existingProductIndex >= 0) {
+        // Update existing product quantity
+        const updatedProducts = [...currentForm.products];
+        updatedProducts[existingProductIndex].quantity += quantity;
+        updatedProducts[existingProductIndex].totalPrice = updatedProducts[existingProductIndex].quantity * updatedProducts[existingProductIndex].price;
+        setForm(prev => ({ ...prev, products: updatedProducts }));
+      } else {
+        // Add new product
+        const newProduct = {
+          ...product,
+          quantity: quantity,
+          totalPrice: product.price * quantity
+        };
+        setForm(prev => ({ ...prev, products: [...prev.products, newProduct] }));
+      }
+      calculateTotals(formType);
+    }
+  };
+
+  // Remove product from form
+  const removeProductFromForm = (productId, formType = 'order') => {
+    const setForm = formType === 'estimate' ? setEstimateForm : setOrderForm;
+    setForm(prev => ({
+      ...prev,
+      products: prev.products.filter(p => p.id !== productId)
+    }));
+    calculateTotals(formType);
+  };
+
+  // Update product quantity
+  const updateProductQuantity = (productId, quantity, formType = 'order') => {
+    if (quantity <= 0) {
+      removeProductFromForm(productId, formType);
+      return;
+    }
+    
+    const currentForm = formType === 'estimate' ? estimateForm : orderForm;
+    const setForm = formType === 'estimate' ? setEstimateForm : setOrderForm;
+    
+    const updatedProducts = currentForm.products.map(p => 
+      p.id === productId 
+        ? { ...p, quantity: quantity, totalPrice: p.price * quantity }
+        : p
+    );
+    setForm(prev => ({ ...prev, products: updatedProducts }));
+    calculateTotals(formType);
+  };
+
+  // Calculate totals
+  const calculateTotals = (formType = 'order') => {
+    const currentForm = formType === 'estimate' ? estimateForm : orderForm;
+    const setForm = formType === 'estimate' ? setEstimateForm : setOrderForm;
+    
+    const subtotal = currentForm.products.reduce((sum, product) => sum + product.totalPrice, 0);
+    let discountAmount = 0;
+    
+    if (currentForm.discount > 0) {
+      if (currentForm.discountType === 'percentage') {
+        discountAmount = (subtotal * currentForm.discount) / 100;
+      } else {
+        discountAmount = currentForm.discount;
+      }
+    }
+    
+    const totalAmount = subtotal - discountAmount;
+    
+    setForm(prev => ({
+      ...prev,
+      subtotal,
+      totalAmount: Math.max(0, totalAmount)
+    }));
+  };
+
+  // Handle form input changes
+  const handleFormChange = (field, value, formType = 'order') => {
+    const setForm = formType === 'estimate' ? setEstimateForm : setOrderForm;
+    setForm(prev => ({ ...prev, [field]: value }));
+    
+    if (field === 'customerPhone') {
+      detectCustomer(value, formType);
+    }
+    
+    if (field === 'discount' || field === 'discountType') {
+      calculateTotals(formType);
+    }
+  };
+
+  // Handle estimate form changes
+  const handleEstimateFormChange = (field, value) => {
+    handleFormChange(field, value, 'estimate');
+  };
+
+  // Create estimate
+  const createEstimate = () => {
+    if (!estimateForm.customerName || !estimateForm.customerPhone || estimateForm.products.length === 0) {
+      alert('Please fill in all required fields and add at least one product');
+      return;
+    }
+
+    const newEstimate = {
+      id: estimateForm.estimateNumber,
+      customer: estimateForm.customerName,
+      phone: estimateForm.customerPhone,
+      email: estimateForm.customerEmail,
+      address: estimateForm.customerAddress,
+      products: estimateForm.products,
+      subtotal: estimateForm.subtotal,
+      discount: estimateForm.discount,
+      discountType: estimateForm.discountType,
+      totalAmount: estimateForm.totalAmount,
+      status: 'Pending',
+      estimateDate: new Date().toISOString().split('T')[0],
+      validUntil: estimateForm.validUntil,
+      notes: estimateForm.notes,
+      isExistingCustomer: estimateForm.isExistingCustomer
+    };
+
+    // Add to estimates list
+    setEstimates(prev => [newEstimate, ...prev]);
+    
+    // Reset form
+    setEstimateForm({
+      customerName: '',
+      customerPhone: '',
+      customerEmail: '',
+      customerAddress: '',
+      isExistingCustomer: false,
+      products: [],
+      subtotal: 0,
+      discount: 0,
+      discountType: 'percentage',
+      totalAmount: 0,
+      notes: '',
+      validUntil: '',
+      estimateNumber: `EST-${Date.now()}`,
+      selectedProduct: null,
+      selectedQuantity: 0
+    });
+    
+    setShowEstimateModal(false);
+    alert('Estimate created successfully! PDF generated and estimate added to list.');
+  };
+
+  // Convert estimate to order
+  const convertEstimateToOrder = () => {
+    setOrderForm({
+      customerName: estimateForm.customerName,
+      customerPhone: estimateForm.customerPhone,
+      customerEmail: estimateForm.customerEmail,
+      customerAddress: estimateForm.customerAddress,
+      isExistingCustomer: estimateForm.isExistingCustomer,
+      products: [...estimateForm.products],
+      subtotal: estimateForm.subtotal,
+      discount: estimateForm.discount,
+      discountType: estimateForm.discountType,
+      totalAmount: estimateForm.totalAmount,
+      notes: estimateForm.notes,
+      expectedDelivery: '',
+      selectedProduct: null,
+      selectedQuantity: 0
+    });
+    
+    setShowEstimateModal(false);
+    setShowCreateModal(true);
+  };
+
+  // Convert existing estimate to order
+  const convertExistingEstimateToOrder = (estimate) => {
+    setOrderForm({
+      customerName: estimate.customer,
+      customerPhone: estimate.phone,
+      customerEmail: estimate.email,
+      customerAddress: estimate.address,
+      isExistingCustomer: estimate.isExistingCustomer,
+      products: [...estimate.products],
+      subtotal: estimate.subtotal,
+      discount: estimate.discount,
+      discountType: estimate.discountType,
+      totalAmount: estimate.totalAmount,
+      notes: estimate.notes,
+      expectedDelivery: '',
+      selectedProduct: null,
+      selectedQuantity: 0
+    });
+    
+    setShowCreateModal(true);
+  };
+
+  // Generate PDF for estimate
+  const generateEstimatePDF = (estimate) => {
+    // In a real application, you would use a PDF library like jsPDF
+    // For now, we'll simulate PDF generation
+    console.log('Generating PDF for estimate:', estimate.id);
+    alert(`PDF generated for estimate ${estimate.id}. In a real application, this would download the PDF.`);
+  };
+
+  // Preview estimate PDF
+  const previewEstimatePDF = (estimate) => {
+    setSelectedEstimate(estimate);
+    setShowEstimatePreviewModal(true);
+  };
+
+  // Edit estimate
+  const editEstimate = (estimate) => {
+    setEditingEstimate(estimate);
+    setEstimateForm({
+      customerName: estimate.customer,
+      customerPhone: estimate.phone,
+      customerEmail: estimate.email,
+      customerAddress: estimate.address,
+      isExistingCustomer: estimate.isExistingCustomer,
+      products: [...estimate.products],
+      subtotal: estimate.subtotal,
+      discount: estimate.discount,
+      discountType: estimate.discountType,
+      totalAmount: estimate.totalAmount,
+      notes: estimate.notes,
+      validUntil: estimate.validUntil,
+      estimateNumber: estimate.id,
+      selectedProduct: null,
+      selectedQuantity: 0
+    });
+    setShowEstimateEditModal(true);
+  };
+
+  // Save edited estimate
+  const saveEditedEstimate = () => {
+    if (!estimateForm.customerName || !estimateForm.customerPhone || estimateForm.products.length === 0) {
+      alert('Please fill in all required fields and add at least one product');
+      return;
+    }
+
+    const updatedEstimate = {
+      ...editingEstimate,
+      customer: estimateForm.customerName,
+      phone: estimateForm.customerPhone,
+      email: estimateForm.customerEmail,
+      address: estimateForm.customerAddress,
+      products: estimateForm.products,
+      subtotal: estimateForm.subtotal,
+      discount: estimateForm.discount,
+      discountType: estimateForm.discountType,
+      totalAmount: estimateForm.totalAmount,
+      notes: estimateForm.notes,
+      validUntil: estimateForm.validUntil,
+      isExistingCustomer: estimateForm.isExistingCustomer
+    };
+
+    setEstimates(prev => prev.map(est => est.id === editingEstimate.id ? updatedEstimate : est));
+    setShowEstimateEditModal(false);
+    setEditingEstimate(null);
+    alert('Estimate updated successfully!');
+  };
+
+  // Email estimate
+  const emailEstimate = (estimate) => {
+    console.log('Emailing estimate:', estimate.id);
+    alert(`Estimate ${estimate.id} sent via email. In a real application, this would send the PDF via email.`);
+  };
+
+  // Delete estimate
+  const deleteEstimate = (estimate) => {
+    setDeletingOrder(estimate);
+    setShowDeleteModal(true);
+  };
+
+  // Create order
+  const createOrder = () => {
+    if (!orderForm.customerName || !orderForm.customerPhone || orderForm.products.length === 0) {
+      alert('Please fill in all required fields and add at least one product');
+      return;
+    }
+
+    const newOrder = {
+      id: `ORD-${Date.now()}`,
+      customer: orderForm.customerName,
+      phone: orderForm.customerPhone,
+      email: orderForm.customerEmail,
+      address: orderForm.customerAddress,
+      products: orderForm.products.map(p => p.name),
+      totalAmount: orderForm.totalAmount,
+      status: 'Pending',
+      orderDate: new Date().toISOString().split('T')[0],
+      notes: orderForm.notes,
+      expectedDelivery: orderForm.expectedDelivery,
+      isExistingCustomer: orderForm.isExistingCustomer
+    };
+
+    console.log('Creating order:', newOrder);
+    
+    // Reset form
+    setOrderForm({
+      customerName: '',
+      customerPhone: '',
+      customerEmail: '',
+      customerAddress: '',
+      isExistingCustomer: false,
+      products: [],
+      subtotal: 0,
+      discount: 0,
+      discountType: 'percentage',
+      totalAmount: 0,
+      notes: '',
+      expectedDelivery: '',
+      selectedProduct: null,
+      selectedQuantity: 0
+    });
+    
+    setShowCreateModal(false);
+    alert('Order created successfully!');
   };
 
   const currentOrders = getCurrentOrders();
@@ -204,13 +660,22 @@ const Orders = () => {
     <div className="orders-container">
       <div className="orders-actions">
         <button 
+          className="add-btn estimate-btn"
+          onClick={() => setShowEstimateModal(true)}
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          Create Estimate
+        </button>
+        <button 
           className="add-btn"
           onClick={() => setShowCreateModal(true)}
         >
           <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Create New Order
+          Create Order
         </button>
       </div>
 
@@ -218,10 +683,10 @@ const Orders = () => {
       <div className="filter-section">
         <div className="filter-tabs">
           <button 
-            className={`filter-tab ${activeTab === 'enquiries' ? 'active' : ''}`}
-            onClick={() => setActiveTab('enquiries')}
+            className={`filter-tab ${activeTab === 'estimates' ? 'active' : ''}`}
+            onClick={() => setActiveTab('estimates')}
           >
-            Enquiries ({enquiries.length})
+            Estimates ({estimates.length})
           </button>
           <button 
             className={`filter-tab ${activeTab === 'active' ? 'active' : ''}`}
@@ -242,8 +707,8 @@ const Orders = () => {
       <div className="orders-table-wrapper">
         <div className="table-header">
           <div className="table-title">
-            <h3>Customer Orders</h3>
-            <span className="order-count">{currentOrders.length} orders</span>
+            <h3>{activeTab === 'estimates' ? 'Customer Estimates' : 'Customer Orders'}</h3>
+            <span className="order-count">{currentOrders.length} {activeTab === 'estimates' ? 'estimates' : 'orders'}</span>
           </div>
         </div>
         <div className="table-container">
@@ -258,14 +723,15 @@ const Orders = () => {
                     className="checkbox-input"
                   />
                 </th>
-                <th className="col-id">Order ID</th>
+                <th className="col-id">{activeTab === 'estimates' ? 'Estimate ID' : 'Order ID'}</th>
                 <th className="col-customer">Customer</th>
                 <th className="col-products">Products</th>
                 <th className="col-amount">Total Amount</th>
                 <th className="col-status">Status</th>
-                <th className="col-date">Date</th>
-                <th className="col-assigned">Assigned To</th>
-                <th className="col-delivery">Delivery</th>
+                <th className="col-date">{activeTab === 'estimates' ? 'Estimate Date' : 'Date'}</th>
+                {activeTab !== 'estimates' && <th className="col-assigned">Assigned To</th>}
+                {activeTab === 'estimates' && <th className="col-valid">Valid Until</th>}
+                {activeTab !== 'estimates' && <th className="col-delivery">Delivery</th>}
                 <th className="col-actions">Actions</th>
               </tr>
             </thead>
@@ -290,14 +756,19 @@ const Orders = () => {
                   <td className="col-customer">
                     <div className="cell-content">
                       <span className="customer-name">{order.customer}</span>
-                      {order.contact && (
-                        <span className="customer-contact">{order.contact}</span>
+                      {(order.contact || order.phone) && (
+                        <span className="customer-contact">{order.contact || order.phone}</span>
                       )}
                     </div>
                   </td>
                   <td className="col-products">
                     <div className="cell-content">
-                      <span className="products-list">{order.products.join(', ')}</span>
+                      <span className="products-list">
+                        {Array.isArray(order.products) 
+                          ? order.products.map(p => typeof p === 'string' ? p : p.name).join(', ')
+                          : order.products.join(', ')
+                        }
+                      </span>
                     </div>
                   </td>
                   <td className="col-amount">
@@ -318,25 +789,36 @@ const Orders = () => {
                   </td>
                   <td className="col-date">
                     <div className="cell-content">
-                      <span className="order-date">{order.orderDate || order.enquiryDate}</span>
+                      <span className="order-date">{order.orderDate || order.enquiryDate || order.estimateDate}</span>
                     </div>
                   </td>
-                  <td className="col-assigned">
-                    <div className="cell-content">
-                      <span className="assigned-to">{order.assignedTo || '-'}</span>
-                    </div>
-                  </td>
-                  <td className="col-delivery">
-                    <div className="cell-content">
-                      <span className="delivery-date">
-                        {order.expectedDelivery || order.deliveredDate || '-'}
-                      </span>
-                    </div>
-                  </td>
+                  {activeTab !== 'estimates' && (
+                    <td className="col-assigned">
+                      <div className="cell-content">
+                        <span className="assigned-to">{order.assignedTo || '-'}</span>
+                      </div>
+                    </td>
+                  )}
+                  {activeTab === 'estimates' && (
+                    <td className="col-valid">
+                      <div className="cell-content">
+                        <span className="valid-until">{order.validUntil || '-'}</span>
+                      </div>
+                    </td>
+                  )}
+                  {activeTab !== 'estimates' && (
+                    <td className="col-delivery">
+                      <div className="cell-content">
+                        <span className="delivery-date">
+                          {order.expectedDelivery || order.deliveredDate || '-'}
+                        </span>
+                      </div>
+                    </td>
+                  )}
                   <td className="col-actions">
                     <div className="cell-content">
                       <div className="action-buttons">
-                        <button
+                        {/* <button
                           className="action-btn view"
                           title="View Details"
                           onClick={() => handleViewDetails(order)}
@@ -345,8 +827,64 @@ const Orders = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
-                        </button>
-                        {order.status === 'Pending' && (
+                        </button> */}
+                        {activeTab === 'estimates' && (
+                          <button
+                            className="action-btn preview"
+                            title="Preview PDF"
+                            onClick={() => previewEstimatePDF(order)}
+                          >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                        )}
+                        {activeTab === 'estimates' && (
+                          <button
+                            className="action-btn edit"
+                            title="Edit Estimate"
+                            onClick={() => editEstimate(order)}
+                          >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                        )}
+                        {activeTab === 'estimates' && (
+                          <button
+                            className="action-btn pdf"
+                            title="Download PDF"
+                            onClick={() => generateEstimatePDF(order)}
+                          >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+                        )}
+                        {activeTab === 'estimates' && (
+                          <button
+                            className="action-btn email"
+                            title="Email Estimate"
+                            onClick={() => emailEstimate(order)}
+                          >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        )}
+                        {activeTab === 'estimates' && (
+                          <button
+                            className="action-btn convert"
+                            title="Convert to Order"
+                            onClick={() => convertExistingEstimateToOrder(order)}
+                          >
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        )}
+                        {activeTab !== 'estimates' && order.status === 'Pending' && (
                           <button
                             className="action-btn confirm"
                             title="Confirm Order"
@@ -356,7 +894,7 @@ const Orders = () => {
                             </svg>
                           </button>
                         )}
-                        {order.status === 'Assigned' && (
+                        {activeTab !== 'estimates' && order.status === 'Assigned' && (
                           <button
                             className="action-btn start"
                             title="Start Work"
@@ -368,8 +906,8 @@ const Orders = () => {
                         )}
                         <button
                           className="action-btn delete"
-                          title="Delete Order"
-                          onClick={() => handleDelete(order)}
+                          title="Delete"
+                          onClick={() => activeTab === 'estimates' ? deleteEstimate(order) : handleDelete(order)}
                         >
                           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -414,10 +952,10 @@ const Orders = () => {
         </div>
       )}
 
-      {/* Create Order Modal */}
+      {/* Simple Order Creation Modal */}
       {showCreateModal && (
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="procurement-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="procurement-modal order-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title-section">
                 <div className="modal-icon">
@@ -427,7 +965,7 @@ const Orders = () => {
                 </div>
                 <div className="modal-title-content">
                   <h3>Create New Order</h3>
-                  <p>Create a new customer order with products and pricing</p>
+                  <p>Add customer details and select products</p>
                 </div>
               </div>
               <button 
@@ -441,6 +979,7 @@ const Orders = () => {
             </div>
             <div className="modal-body">
               <form className="procurement-form">
+                {/* Customer Information */}
                 <div className="form-section">
                   <div className="section-header">
                     <div className="section-icon">
@@ -449,42 +988,95 @@ const Orders = () => {
                       </svg>
                     </div>
                     <h4>Customer Information</h4>
-                  </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    {orderForm.isExistingCustomer && (
+                      <span className="existing-customer-badge">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        Customer
-                      </label>
-                      <div className="input-wrapper">
-                        <select className="form-input">
-                          <option value="">Select customer</option>
-                          <option value="ABC Construction">ABC Construction</option>
-                          <option value="XYZ Builders">XYZ Builders</option>
-                          <option value="DEF Developers">DEF Developers</option>
-                        </select>
-                      </div>
-                    </div>
+                        Existing Customer
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="form-row">
                     <div className="form-group">
                       <label className="form-label">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        Contact Number
+                        Phone Number *
                       </label>
                       <div className="input-wrapper">
                         <input 
                           type="tel" 
                           className="form-input" 
-                          placeholder="Enter contact number"
+                          placeholder="Enter phone number"
+                          value={orderForm.customerPhone}
+                          onChange={(e) => handleFormChange('customerPhone', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Customer Name *
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="text" 
+                          className="form-input" 
+                          placeholder="Enter customer name"
+                          value={orderForm.customerName}
+                          onChange={(e) => handleFormChange('customerName', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Email
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="email" 
+                          className="form-input" 
+                          placeholder="Enter email address"
+                          value={orderForm.customerEmail}
+                          onChange={(e) => handleFormChange('customerEmail', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Address
+                      </label>
+                      <div className="input-wrapper">
+                        <textarea 
+                          className="form-input" 
+                          placeholder="Enter customer address"
+                          rows="2"
+                          value={orderForm.customerAddress}
+                          onChange={(e) => handleFormChange('customerAddress', e.target.value)}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Product Selection */}
                 <div className="form-section">
                   <div className="section-header">
                     <div className="section-icon">
@@ -492,86 +1084,125 @@ const Orders = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                     </div>
-                    <h4>Product Selection</h4>
+                    <h4>Add Products</h4>
                   </div>
+                  
                   <div className="form-row">
                     <div className="form-group">
-                      <label className="form-label">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                        Product
-                      </label>
+                      <label className="form-label">Product</label>
                       <div className="input-wrapper">
-                        <select className="form-input">
+                        <select 
+                          className="form-input"
+                          value={orderForm.selectedProduct ? orderForm.selectedProduct.id : ''}
+                          onChange={(e) => {
+                            const product = availableProducts.find(p => p.id === e.target.value);
+                            if (product) {
+                              setOrderForm(prev => ({ ...prev, selectedProduct: product }));
+                            }
+                          }}
+                        >
                           <option value="">Select product</option>
-                          <option value="teak">Teak Wood Planks</option>
-                          <option value="pine">Pine Wood Logs</option>
-                          <option value="oak">Oak Wood Beams</option>
-                          <option value="cedar">Cedar Wood Panels</option>
-                          <option value="mahogany">Mahogany Planks</option>
+                          {availableProducts.map(product => (
+                            <option key={product.id} value={product.id}>
+                              {product.name} - ₹{product.price}/{product.unit}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
+                    
                     <div className="form-group">
-                      <label className="form-label">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                        Quantity
-                      </label>
+                      <label className="form-label">Quantity</label>
                       <div className="input-wrapper">
                         <input 
                           type="number" 
                           className="form-input" 
                           placeholder="Enter quantity"
+                          min="1"
+                          value={orderForm.selectedQuantity || ''}
+                          onChange={(e) => {
+                            setOrderForm(prev => ({ ...prev, selectedQuantity: parseInt(e.target.value) || 0 }));
+                          }}
                         />
                       </div>
                     </div>
                   </div>
+                  
                   <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">
+                    <div className="form-group full-width">
+                      <button 
+                        type="button" 
+                        className="add-product-btn full-width-btn"
+                        onClick={() => {
+                          if (orderForm.selectedProduct && orderForm.selectedQuantity > 0) {
+                            addProductToForm(orderForm.selectedProduct.id, orderForm.selectedQuantity, 'order');
+                            setOrderForm(prev => ({ ...prev, selectedProduct: null, selectedQuantity: 0 }));
+                          } else {
+                            alert('Please select a product and enter quantity');
+                          }
+                        }}
+                      >
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
-                        Unit
-                      </label>
-                      <div className="input-wrapper">
-                        <select className="form-input">
-                          <option value="CFT">CFT (Cubic Feet)</option>
-                          <option value="SQFT">SQFT (Square Feet)</option>
-                          <option value="Piece">Piece</option>
-                          <option value="Bundle">Bundle</option>
-                        </select>
-                      </div>
+                        Add Product to Order
+                      </button>
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                        </svg>
-                        Price per Unit (₹)
-                      </label>
-                      <div className="input-wrapper">
-                        <input 
-                          type="number" 
-                          className="form-input" 
-                          placeholder="Enter price per unit"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-actions">
-                    <button type="button" className="btn-secondary">
-                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Add Product
-                    </button>
                   </div>
                 </div>
 
+                {/* Selected Products */}
+                {orderForm.products.length > 0 && (
+                  <div className="form-section">
+                    <div className="section-header">
+                      <div className="section-icon">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                      </div>
+                      <h4>Selected Products ({orderForm.products.length})</h4>
+                    </div>
+                    
+                    <div className="selected-products-list">
+                      {orderForm.products.map((product, index) => (
+                        <div key={product.id} className="product-item">
+                          <div className="product-info">
+                            <h5>{product.name}</h5>
+                            <p>{product.category} • ₹{product.price}/{product.unit}</p>
+                          </div>
+                          <div className="product-quantity">
+                           <button 
+                             className="qty-btn"
+                             onClick={() => updateProductQuantity(product.id, product.quantity - 1, 'order')}
+                           >
+                             -
+                           </button>
+                           <span>{product.quantity}</span>
+                           <button 
+                             className="qty-btn"
+                             onClick={() => updateProductQuantity(product.id, product.quantity + 1, 'order')}
+                           >
+                             +
+                           </button>
+                          </div>
+                          <div className="product-total">
+                            ₹{product.totalPrice.toLocaleString()}
+                          </div>
+                           <button 
+                             className="remove-btn"
+                             onClick={() => removeProductFromForm(product.id, 'order')}
+                           >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Order Summary */}
                 <div className="form-section">
                   <div className="section-header">
                     <div className="section-icon">
@@ -581,21 +1212,51 @@ const Orders = () => {
                     </div>
                     <h4>Order Summary</h4>
                   </div>
+                  
                   <div className="order-summary">
                     <div className="summary-item">
                       <span>Subtotal:</span>
-                      <span>₹0.00</span>
+                      <span>₹{orderForm.subtotal.toLocaleString()}</span>
                     </div>
-                    <div className="summary-item">
-                      <span>Discount:</span>
-                      <span>₹0.00</span>
+                    
+                    <div className="discount-section">
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">Discount</label>
+                          <div className="input-wrapper">
+                            <input 
+                              type="number" 
+                              className="form-input" 
+                              placeholder="Enter discount"
+                              value={orderForm.discount}
+                              onChange={(e) => handleFormChange('discount', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="form-group">
+                          <label className="form-label">Type</label>
+                          <div className="input-wrapper">
+                            <select 
+                              className="form-input"
+                              value={orderForm.discountType}
+                              onChange={(e) => handleFormChange('discountType', e.target.value)}
+                            >
+                              <option value="percentage">Percentage (%)</option>
+                              <option value="fixed">Fixed Amount (₹)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                    
                     <div className="summary-item total">
                       <span>Total Amount:</span>
-                      <span>₹0.00</span>
+                      <span>₹{orderForm.totalAmount.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
+
 
                 <div className="form-actions">
                   <button 
@@ -608,7 +1269,11 @@ const Orders = () => {
                     </svg>
                     Cancel
                   </button>
-                  <button type="submit" className="btn-primary">
+                  <button 
+                    type="button" 
+                    className="btn-primary"
+                    onClick={createOrder}
+                  >
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -616,6 +1281,801 @@ const Orders = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Estimate Modal */}
+      {showEstimateModal && (
+        <div className="modal-overlay" onClick={() => setShowEstimateModal(false)}>
+          <div className="procurement-modal estimate-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title-section">
+                <div className="modal-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="modal-title-content">
+                  <h3>Create Estimate</h3>
+                  <p>Generate estimate for customer discussion and pricing</p>
+                </div>
+              </div>
+              <button 
+                className="modal-close"
+                onClick={() => setShowEstimateModal(false)}
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <form className="procurement-form">
+                {/* Customer Information */}
+                <div className="form-section">
+                  <div className="section-header">
+                    <div className="section-icon">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <h4>Customer Information</h4>
+                    {estimateForm.isExistingCustomer && (
+                      <span className="existing-customer-badge">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Existing Customer
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        Phone Number *
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="tel" 
+                          className="form-input" 
+                          placeholder="Enter phone number"
+                          value={estimateForm.customerPhone}
+                          onChange={(e) => handleEstimateFormChange('customerPhone', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Customer Name *
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="text" 
+                          className="form-input" 
+                          placeholder="Enter customer name"
+                          value={estimateForm.customerName}
+                          onChange={(e) => handleEstimateFormChange('customerName', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Email
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="email" 
+                          className="form-input" 
+                          placeholder="Enter email address"
+                          value={estimateForm.customerEmail}
+                          onChange={(e) => handleEstimateFormChange('customerEmail', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Address
+                      </label>
+                      <div className="input-wrapper">
+                        <textarea 
+                          className="form-input" 
+                          placeholder="Enter customer address"
+                          rows="2"
+                          value={estimateForm.customerAddress}
+                          onChange={(e) => handleEstimateFormChange('customerAddress', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product Selection */}
+                <div className="form-section">
+                  <div className="section-header">
+                    <div className="section-icon">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <h4>Add Products</h4>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Product</label>
+                      <div className="input-wrapper">
+                        <select 
+                          className="form-input"
+                          value={estimateForm.selectedProduct ? estimateForm.selectedProduct.id : ''}
+                          onChange={(e) => {
+                            const product = availableProducts.find(p => p.id === e.target.value);
+                            if (product) {
+                              setEstimateForm(prev => ({ ...prev, selectedProduct: product }));
+                            }
+                          }}
+                        >
+                          <option value="">Select product</option>
+                          {availableProducts.map(product => (
+                            <option key={product.id} value={product.id}>
+                              {product.name} - ₹{product.price}/{product.unit}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Quantity</label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="number" 
+                          className="form-input" 
+                          placeholder="Enter quantity"
+                          min="1"
+                          value={estimateForm.selectedQuantity || ''}
+                          onChange={(e) => {
+                            setEstimateForm(prev => ({ ...prev, selectedQuantity: parseInt(e.target.value) || 0 }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group full-width">
+                      <button 
+                        type="button" 
+                        className="add-product-btn full-width-btn"
+                        onClick={() => {
+                          if (estimateForm.selectedProduct && estimateForm.selectedQuantity > 0) {
+                            addProductToForm(estimateForm.selectedProduct.id, estimateForm.selectedQuantity, 'estimate');
+                            setEstimateForm(prev => ({ ...prev, selectedProduct: null, selectedQuantity: 0 }));
+                          } else {
+                            alert('Please select a product and enter quantity');
+                          }
+                        }}
+                      >
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Product to Estimate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Selected Products */}
+                {estimateForm.products.length > 0 && (
+                  <div className="form-section">
+                    <div className="section-header">
+                      <div className="section-icon">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                      </div>
+                      <h4>Selected Products ({estimateForm.products.length})</h4>
+                    </div>
+                    
+                    <div className="selected-products-list">
+                      {estimateForm.products.map((product, index) => (
+                        <div key={product.id} className="product-item">
+                          <div className="product-info">
+                            <h5>{product.name}</h5>
+                            <p>{product.category} • ₹{product.price}/{product.unit}</p>
+                          </div>
+                          <div className="product-quantity">
+                            <button 
+                              className="qty-btn"
+                              onClick={() => updateProductQuantity(product.id, product.quantity - 1, 'estimate')}
+                            >
+                              -
+                            </button>
+                            <span>{product.quantity}</span>
+                            <button 
+                              className="qty-btn"
+                              onClick={() => updateProductQuantity(product.id, product.quantity + 1, 'estimate')}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <div className="product-total">
+                            ₹{product.totalPrice.toLocaleString()}
+                          </div>
+                          <button 
+                            className="remove-btn"
+                            onClick={() => removeProductFromForm(product.id, 'estimate')}
+                          >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Estimate Summary */}
+                <div className="form-section">
+                  <div className="section-header">
+                    <div className="section-icon">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h4>Estimate Summary</h4>
+                  </div>
+                  
+                  <div className="order-summary">
+                    <div className="summary-item">
+                      <span>Subtotal:</span>
+                      <span>₹{estimateForm.subtotal.toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="discount-section">
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">Discount</label>
+                          <div className="input-wrapper">
+                            <input 
+                              type="number" 
+                              className="form-input" 
+                              placeholder="Enter discount"
+                              value={estimateForm.discount}
+                              onChange={(e) => handleEstimateFormChange('discount', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="form-group">
+                          <label className="form-label">Type</label>
+                          <div className="input-wrapper">
+                            <select 
+                              className="form-input"
+                              value={estimateForm.discountType}
+                              onChange={(e) => handleEstimateFormChange('discountType', e.target.value)}
+                            >
+                              <option value="percentage">Percentage (%)</option>
+                              <option value="fixed">Fixed Amount (₹)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="summary-item total">
+                      <span>Total Amount:</span>
+                      <span>₹{estimateForm.totalAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="form-actions">
+                  <button 
+                    type="button" 
+                    className="btn-secondary"
+                    onClick={() => setShowEstimateModal(false)}
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn-primary convert-btn"
+                    onClick={convertEstimateToOrder}
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Convert to Order
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn-primary"
+                    onClick={createEstimate}
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Create Estimate
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Estimate Edit Modal */}
+      {showEstimateEditModal && (
+        <div className="modal-overlay" onClick={() => setShowEstimateEditModal(false)}>
+          <div className="procurement-modal estimate-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title-section">
+                <div className="modal-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </div>
+                <div className="modal-title-content">
+                  <h3>Edit Estimate - {editingEstimate?.id}</h3>
+                  <p>Modify estimate details and products</p>
+                </div>
+              </div>
+              <button 
+                className="modal-close"
+                onClick={() => setShowEstimateEditModal(false)}
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <form className="procurement-form">
+                {/* Customer Information */}
+                <div className="form-section">
+                  <div className="section-header">
+                    <div className="section-icon">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <h4>Customer Information</h4>
+                    {estimateForm.isExistingCustomer && (
+                      <span className="existing-customer-badge">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Existing Customer
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        Phone Number *
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="tel" 
+                          className="form-input" 
+                          placeholder="Enter phone number"
+                          value={estimateForm.customerPhone}
+                          onChange={(e) => handleEstimateFormChange('customerPhone', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Customer Name *
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="text" 
+                          className="form-input" 
+                          placeholder="Enter customer name"
+                          value={estimateForm.customerName}
+                          onChange={(e) => handleEstimateFormChange('customerName', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Email
+                      </label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="email" 
+                          className="form-input" 
+                          placeholder="Enter email address"
+                          value={estimateForm.customerEmail}
+                          onChange={(e) => handleEstimateFormChange('customerEmail', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Address
+                      </label>
+                      <div className="input-wrapper">
+                        <textarea 
+                          className="form-input" 
+                          placeholder="Enter customer address"
+                          rows="2"
+                          value={estimateForm.customerAddress}
+                          onChange={(e) => handleEstimateFormChange('customerAddress', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product Selection - Same as create estimate */}
+                <div className="form-section">
+                  <div className="section-header">
+                    <div className="section-icon">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <h4>Add Products</h4>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Product</label>
+                      <div className="input-wrapper">
+                        <select 
+                          className="form-input"
+                          value={estimateForm.selectedProduct ? estimateForm.selectedProduct.id : ''}
+                          onChange={(e) => {
+                            const product = availableProducts.find(p => p.id === e.target.value);
+                            if (product) {
+                              setEstimateForm(prev => ({ ...prev, selectedProduct: product }));
+                            }
+                          }}
+                        >
+                          <option value="">Select product</option>
+                          {availableProducts.map(product => (
+                            <option key={product.id} value={product.id}>
+                              {product.name} - ₹{product.price}/{product.unit}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Quantity</label>
+                      <div className="input-wrapper">
+                        <input 
+                          type="number" 
+                          className="form-input" 
+                          placeholder="Enter quantity"
+                          min="1"
+                          value={estimateForm.selectedQuantity || ''}
+                          onChange={(e) => {
+                            setEstimateForm(prev => ({ ...prev, selectedQuantity: parseInt(e.target.value) || 0 }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group full-width">
+                      <button 
+                        type="button" 
+                        className="add-product-btn full-width-btn"
+                        onClick={() => {
+                          if (estimateForm.selectedProduct && estimateForm.selectedQuantity > 0) {
+                            addProductToForm(estimateForm.selectedProduct.id, estimateForm.selectedQuantity, 'estimate');
+                            setEstimateForm(prev => ({ ...prev, selectedProduct: null, selectedQuantity: 0 }));
+                          } else {
+                            alert('Please select a product and enter quantity');
+                          }
+                        }}
+                      >
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Product to Estimate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Selected Products - Same as create estimate */}
+                {estimateForm.products.length > 0 && (
+                  <div className="form-section">
+                    <div className="section-header">
+                      <div className="section-icon">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                      </div>
+                      <h4>Selected Products ({estimateForm.products.length})</h4>
+                    </div>
+                    
+                    <div className="selected-products-list">
+                      {estimateForm.products.map((product, index) => (
+                        <div key={product.id} className="product-item">
+                          <div className="product-info">
+                            <h5>{product.name}</h5>
+                            <p>{product.category} • ₹{product.price}/{product.unit}</p>
+                          </div>
+                          <div className="product-quantity">
+                            <button 
+                              className="qty-btn"
+                              onClick={() => updateProductQuantity(product.id, product.quantity - 1, 'estimate')}
+                            >
+                              -
+                            </button>
+                            <span>{product.quantity}</span>
+                            <button 
+                              className="qty-btn"
+                              onClick={() => updateProductQuantity(product.id, product.quantity + 1, 'estimate')}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <div className="product-total">
+                            ₹{product.totalPrice.toLocaleString()}
+                          </div>
+                          <button 
+                            className="remove-btn"
+                            onClick={() => removeProductFromForm(product.id, 'estimate')}
+                          >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Estimate Summary - Same as create estimate */}
+                <div className="form-section">
+                  <div className="section-header">
+                    <div className="section-icon">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h4>Estimate Summary</h4>
+                  </div>
+                  
+                  <div className="order-summary">
+                    <div className="summary-item">
+                      <span>Subtotal:</span>
+                      <span>₹{estimateForm.subtotal.toLocaleString()}</span>
+                    </div>
+                    
+                    <div className="discount-section">
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">Discount</label>
+                          <div className="input-wrapper">
+                            <input 
+                              type="number" 
+                              className="form-input" 
+                              placeholder="Enter discount"
+                              value={estimateForm.discount}
+                              onChange={(e) => handleEstimateFormChange('discount', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="form-group">
+                          <label className="form-label">Type</label>
+                          <div className="input-wrapper">
+                            <select 
+                              className="form-input"
+                              value={estimateForm.discountType}
+                              onChange={(e) => handleEstimateFormChange('discountType', e.target.value)}
+                            >
+                              <option value="percentage">Percentage (%)</option>
+                              <option value="fixed">Fixed Amount (₹)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="summary-item total">
+                      <span>Total Amount:</span>
+                      <span>₹{estimateForm.totalAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button 
+                    type="button" 
+                    className="btn-secondary"
+                    onClick={() => setShowEstimateEditModal(false)}
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn-primary"
+                    onClick={saveEditedEstimate}
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Estimate PDF Preview Modal */}
+      {showEstimatePreviewModal && selectedEstimate && (
+        <div className="modal-overlay" onClick={() => setShowEstimatePreviewModal(false)}>
+          <div className="procurement-modal pdf-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title-section">
+                <div className="modal-icon">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="modal-title-content">
+                  <h3>Estimate PDF Preview - {selectedEstimate.id}</h3>
+                  <p>Preview and manage estimate document</p>
+                </div>
+              </div>
+              <button 
+                className="modal-close"
+                onClick={() => setShowEstimatePreviewModal(false)}
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="pdf-preview-content">
+                <div className="pdf-header">
+                  <h2>ESTIMATE</h2>
+                  <div className="estimate-info">
+                    <p><strong>Estimate #:</strong> {selectedEstimate.id}</p>
+                    <p><strong>Date:</strong> {selectedEstimate.estimateDate}</p>
+                    <p><strong>Valid Until:</strong> {selectedEstimate.validUntil}</p>
+                  </div>
+                </div>
+                
+                <div className="pdf-customer">
+                  <h3>Bill To:</h3>
+                  <p><strong>{selectedEstimate.customer}</strong></p>
+                  <p>{selectedEstimate.phone}</p>
+                  <p>{selectedEstimate.email}</p>
+                  <p>{selectedEstimate.address}</p>
+                </div>
+                
+                <div className="pdf-products">
+                  <h3>Products & Services:</h3>
+                  <table className="pdf-table">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedEstimate.products.map((product, index) => (
+                        <tr key={index}>
+                          <td>{product.name}</td>
+                          <td>{product.quantity}</td>
+                          <td>₹{product.price}</td>
+                          <td>₹{product.totalPrice.toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div className="pdf-summary">
+                  <div className="summary-row">
+                    <span>Subtotal:</span>
+                    <span>₹{selectedEstimate.subtotal.toLocaleString()}</span>
+                  </div>
+                  {selectedEstimate.discount > 0 && (
+                    <div className="summary-row">
+                      <span>Discount ({selectedEstimate.discountType === 'percentage' ? selectedEstimate.discount + '%' : '₹' + selectedEstimate.discount}):</span>
+                      <span>-₹{selectedEstimate.discountType === 'percentage' ? ((selectedEstimate.subtotal * selectedEstimate.discount) / 100).toLocaleString() : selectedEstimate.discount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="summary-row total">
+                    <span><strong>Total Amount:</strong></span>
+                    <span><strong>₹{selectedEstimate.totalAmount.toLocaleString()}</strong></span>
+                  </div>
+                </div>
+                
+                {selectedEstimate.notes && (
+                  <div className="pdf-notes">
+                    <h3>Notes:</h3>
+                    <p>{selectedEstimate.notes}</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="pdf-actions">
+                <button 
+                  className="btn-secondary"
+                  onClick={() => setShowEstimatePreviewModal(false)}
+                >
+                  Close
+                </button>
+                <button 
+                  className="btn-primary"
+                  onClick={() => generateEstimatePDF(selectedEstimate)}
+                >
+                  Download PDF
+                </button>
+                <button 
+                  className="btn-primary"
+                  onClick={() => emailEstimate(selectedEstimate)}
+                >
+                  Email Estimate
+                </button>
+              </div>
             </div>
           </div>
         </div>

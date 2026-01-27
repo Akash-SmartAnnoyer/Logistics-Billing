@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { settingsService } from '../services/settingsService';
 import toast from 'react-hot-toast';
+import Procurement from './Procurement';
+import Products from './Products';
+import Orders from './Orders';
+import Billing from './Billing';
+import Reports from './Reports';
+import Settings from './Settings';
 import ThemeToggle from './common/ThemeToggle.jsx';
 import './auth/auth.css';
 
@@ -36,13 +42,43 @@ const Dashboard = () => {
   const menuItems = [
     { 
       id: 'home', 
-      label: 'Home', 
+      label: 'Dashboard', 
       icon: (
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       ), 
       path: '/dashboard' 
+    },
+    { 
+      id: 'procurement', 
+      label: 'Procurement', 
+      icon: (
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      ), 
+      path: '/dashboard/procurement' 
+    },
+    { 
+      id: 'products', 
+      label: 'Stock Management', 
+      icon: (
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      ), 
+      path: '/dashboard/products' 
+    },
+    { 
+      id: 'orders', 
+      label: 'Orders', 
+      icon: (
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      ), 
+      path: '/dashboard/orders' 
     },
     { 
       id: 'billing', 
@@ -53,26 +89,6 @@ const Dashboard = () => {
         </svg>
       ), 
       path: '/dashboard/billing' 
-    },
-    { 
-      id: 'invoices', 
-      label: 'Invoices', 
-      icon: (
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ), 
-      path: '/dashboard/invoices' 
-    },
-    { 
-      id: 'customers', 
-      label: 'Customers', 
-      icon: (
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-        </svg>
-      ), 
-      path: '/dashboard/customers' 
     },
     { 
       id: 'reports', 
@@ -159,52 +175,116 @@ const Dashboard = () => {
       case 'home':
         return (
           <div className="dashboard-content">
-            <h2 className="content-title">Welcome to TMS Billing</h2>
-            <p className="content-description">Your comprehensive billing management system</p>
+            <h2 className="content-title">Timber Depot Dashboard</h2>
+            <p className="content-description">Your comprehensive timber depot management system</p>
+            
+            {/* Summary Cards */}
             <div className="content-grid">
               <div className="content-card">
-                <h3>Total Invoices</h3>
-                <p className="content-number">0</p>
+                <h3>Total Orders</h3>
+                <p className="content-number">24</p>
+                <div className="content-breakdown">
+                  <span className="breakdown-item">Pending: 8</span>
+                  <span className="breakdown-item">Completed: 12</span>
+                  <span className="breakdown-item">Delivered: 4</span>
+                </div>
               </div>
               <div className="content-card">
-                <h3>Paid Amount</h3>
-                <p className="content-number">$0.00</p>
+                <h3>Pending Bills</h3>
+                <p className="content-number">₹45,600</p>
+                <div className="content-breakdown">
+                  <span className="breakdown-item">Overdue: ₹12,300</span>
+                  <span className="breakdown-item">Due Soon: ₹33,300</span>
+                </div>
               </div>
               <div className="content-card">
-                <h3>Pending Amount</h3>
-                <p className="content-number">$0.00</p>
+                <h3>Revenue Today</h3>
+                <p className="content-number">₹18,500</p>
+                <div className="content-breakdown">
+                  <span className="breakdown-item">This Week: ₹1,25,000</span>
+                  <span className="breakdown-item">This Month: ₹4,50,000</span>
+                </div>
+              </div>
+              <div className="content-card">
+                <h3>Low Stock Alerts</h3>
+                <p className="content-number">7</p>
+                <div className="content-breakdown">
+                  <span className="breakdown-item">Critical: 3 items</span>
+                  <span className="breakdown-item">Warning: 4 items</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Charts Section */}
+            <div className="charts-section">
+              <h3 className="charts-title">Sales Analytics</h3>
+              <div className="charts-grid">
+                <div className="chart-card">
+                  <h4>Sales Trend (Last 7 Days)</h4>
+                  <div className="chart-placeholder">
+                    <div className="chart-bars">
+                      <div className="chart-bar" style={{height: '60%'}}></div>
+                      <div className="chart-bar" style={{height: '80%'}}></div>
+                      <div className="chart-bar" style={{height: '45%'}}></div>
+                      <div className="chart-bar" style={{height: '90%'}}></div>
+                      <div className="chart-bar" style={{height: '70%'}}></div>
+                      <div className="chart-bar" style={{height: '85%'}}></div>
+                      <div className="chart-bar" style={{height: '95%'}}></div>
+                    </div>
+                    <div className="chart-labels">
+                      <span>Mon</span>
+                      <span>Tue</span>
+                      <span>Wed</span>
+                      <span>Thu</span>
+                      <span>Fri</span>
+                      <span>Sat</span>
+                      <span>Sun</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="chart-card">
+                  <h4>Product-wise Revenue</h4>
+                  <div className="chart-placeholder">
+                    <div className="pie-chart">
+                      <div className="pie-slice" style={{'--percentage': '40%', '--color': '#3b82f6'}}></div>
+                      <div className="pie-slice" style={{'--percentage': '30%', '--color': '#10b981'}}></div>
+                      <div className="pie-slice" style={{'--percentage': '20%', '--color': '#f59e0b'}}></div>
+                      <div className="pie-slice" style={{'--percentage': '10%', '--color': '#ef4444'}}></div>
+                    </div>
+                    <div className="chart-legend">
+                      <div className="legend-item">
+                        <span className="legend-color" style={{backgroundColor: '#3b82f6'}}></span>
+                        <span>Teak Wood (40%)</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-color" style={{backgroundColor: '#10b981'}}></span>
+                        <span>Pine Wood (30%)</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-color" style={{backgroundColor: '#f59e0b'}}></span>
+                        <span>Oak Wood (20%)</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-color" style={{backgroundColor: '#ef4444'}}></span>
+                        <span>Others (10%)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         );
+      case 'procurement':
+        return <Procurement />;
+      case 'products':
+        return <Products />;
+      case 'orders':
+        return <Orders />;
       case 'billing':
-        return (
-          <div className="dashboard-content">
-            <h2 className="content-title">Billing Management</h2>
-            <p className="content-description">Manage your billing processes and transactions</p>
-          </div>
-        );
-      case 'invoices':
-        return (
-          <div className="dashboard-content">
-            <h2 className="content-title">Invoice Management</h2>
-            <p className="content-description">Create, view, and manage your invoices</p>
-          </div>
-        );
-      case 'customers':
-        return (
-          <div className="dashboard-content">
-            <h2 className="content-title">Customer Management</h2>
-            <p className="content-description">Manage your customer database and relationships</p>
-          </div>
-        );
+        return <Billing />;
       case 'reports':
-        return (
-          <div className="dashboard-content">
-            <h2 className="content-title">Reports & Analytics</h2>
-            <p className="content-description">View detailed reports and analytics</p>
-          </div>
-        );
+        return <Reports />;
       case 'settings':
         const handleNavigationModeChange = (mode) => {
           const result = settingsService.setNavigationMode(mode);
@@ -300,10 +380,9 @@ const Dashboard = () => {
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 17a2 2 0 100 4 2 2 0 000-4zM18 17a2 2 0 100 4 2 2 0 000-4zM2 12h2l2.5-2.5L9 12h4l2-2h3l2 2v4H4v-4z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8h18l-1 4H4l-1-4z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
-            {!sidebarCollapsed && <span className="sidebar-title">TMS Billing</span>}
+            {!sidebarCollapsed && <span className="sidebar-title">Timber Depot</span>}
           </div>
           <button 
             className="sidebar-pin-btn"
@@ -355,7 +434,28 @@ const Dashboard = () => {
            <div className="dashboard-header-content">
              <div className="dashboard-nav-wrapper">
                {showHeaderNav && (
-               <nav className="dashboard-nav">
+               <div className="header-left">
+               <h1 className="page-title">
+                 {activeSection === 'home' ? 'Dashboard' : 
+                  activeSection === 'procurement' ? 'Procurement & Warehouse' :
+                  activeSection === 'products' ? 'Stock Management' :
+                  activeSection === 'orders' ? 'Customer Orders' :
+                  activeSection === 'billing' ? 'Billing & Invoices' :
+                  activeSection === 'reports' ? 'Reports & Analytics' :
+                  activeSection === 'settings' ? 'Settings' : 'Dashboard'}
+               </h1>
+               <p className="page-subtitle">
+                 {activeSection === 'home' ? 'Overview of your timber depot operations' :
+                  activeSection === 'procurement' ? 'Manage vendor orders and warehouse inventory' :
+                  activeSection === 'products' ? 'Manage product catalog and pricing' :
+                  activeSection === 'orders' ? 'Track customer orders and deliveries' :
+                  activeSection === 'billing' ? 'Manage invoices and payments' :
+                  activeSection === 'reports' ? 'View analytics and generate reports' :
+                  activeSection === 'settings' ? 'Configure application settings' : 'Timber Depot Management'}
+               </p>
+             </div>
+             
+             <nav className="dashboard-nav">
                  {menuItems.map((item) => (
                    <button
                      key={item.id}

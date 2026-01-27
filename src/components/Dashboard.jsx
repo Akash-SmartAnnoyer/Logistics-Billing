@@ -188,6 +188,11 @@ const Dashboard = () => {
     return currentMenuItem ? currentMenuItem.label : 'Dashboard';
   };
 
+  // Handle save settings
+  const handleSaveSettings = () => {
+    toast.success('Settings saved successfully');
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'home':
@@ -320,10 +325,6 @@ const Dashboard = () => {
           setSettingsFormData(prev => ({ ...prev, [field]: value }));
         };
 
-        const handleSaveSettings = () => {
-          toast.success('Settings saved successfully');
-        };
-
         const settingsTabs = [
           { 
             id: 'appearance', 
@@ -375,15 +376,6 @@ const Dashboard = () => {
 
         return (
           <div className="settings-page">
-            <div className="settings-page-header">
-              <button className="btn-save-settings" onClick={handleSaveSettings}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Save Changes
-              </button>
-            </div>
-
             <div className="settings-layout">
               {/* Settings Sidebar Navigation */}
               <aside className="settings-sidebar">
@@ -970,6 +962,14 @@ const Dashboard = () => {
              </div>
 
            <div className="dashboard-user">
+            {activeSection === 'settings' && (
+              <button className="btn-save-settings" onClick={handleSaveSettings}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Save Changes
+              </button>
+            )}
             <span className="user-name">Hello, {user.firstName}</span>
             <ThemeToggle />
             <div className="user-avatar">

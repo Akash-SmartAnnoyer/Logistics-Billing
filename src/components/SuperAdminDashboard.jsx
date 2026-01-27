@@ -14,6 +14,7 @@ const SuperAdminDashboard = () => {
   const [carriers, setCarriers] = useState([]);
   const [filteredCarriers, setFilteredCarriers] = useState([]);
   const [activeFilters, setActiveFilters] = useState(['all']);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCarrier, setSelectedCarrier] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -156,14 +157,26 @@ const SuperAdminDashboard = () => {
   useEffect(() => {
     let filtered = [...carriers];
     
+    // Apply status filters
     if (activeFilters.length > 0 && !activeFilters.includes('all')) {
       filtered = filtered.filter(carrier => 
         activeFilters.includes(carrier.status)
       );
     }
     
+    // Apply search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(carrier => 
+        carrier.name.toLowerCase().includes(query) ||
+        carrier.code.toLowerCase().includes(query) ||
+        carrier.email?.toLowerCase().includes(query) ||
+        carrier.assignedAdmin?.name?.toLowerCase().includes(query)
+      );
+    }
+    
     setFilteredCarriers(filtered);
-  }, [activeFilters, carriers]);
+  }, [activeFilters, carriers, searchQuery]);
 
   const menuItems = [
     { 
@@ -260,6 +273,11 @@ const SuperAdminDashboard = () => {
     return currentMenuItem ? currentMenuItem.label : 'Dashboard';
   };
 
+  // Handle save settings
+  const handleSaveSettings = () => {
+    toast.success('Settings saved successfully');
+  };
+
   // Calculate carrier statistics
   const getCarrierStats = () => {
     const total = carriers.length;
@@ -311,7 +329,7 @@ const SuperAdminDashboard = () => {
         return (
           <div className="dashboard-content">
             <h2 className="content-title">Super Admin Dashboard</h2>
-            <p className="content-description">Manage organizations and carriers</p>
+            {/* <p className="content-description">Manage organizations and carriers</p> */}
             <div className="content-grid">
               <div className="content-card">
                 <h3>Total Organizations</h3>
@@ -333,22 +351,6 @@ const SuperAdminDashboard = () => {
         const selectedFilter = activeFilters.length > 0 ? activeFilters[0] : 'all';
         return (
           <div className="carriers-page">
-            {/* Page Header */}
-            <div className="carriers-page-header">
-              <div className="carriers-page-title-section">
-                <h1 className="carriers-page-title">Manage Partners</h1>
-                <p className="carriers-page-subtitle">
-                  Overview of all registered logistics carriers, their assigned administrative staff, and current operational health.
-                </p>
-              </div>
-              <button className="btn-create-carrier">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Create New Carrier
-              </button>
-            </div>
-
             {/* Summary Cards */}
             <div className="carriers-summary-cards">
               <div className="summary-card">
@@ -417,6 +419,33 @@ const SuperAdminDashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
+              
+              {/* Search Bar */}
+              <div className="carriers-search-wrapper">
+                <div className="carriers-search">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="search-icon">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    className="carriers-search-input"
+                    placeholder="Search carriers..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button 
+                      className="search-clear-btn"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {activeFilters.length > 0 && (
                 <button className="clear-filters-link" onClick={clearAllFilters}>
                   Clear Filters
@@ -428,12 +457,19 @@ const SuperAdminDashboard = () => {
             <div className="partners-grid">
               {filteredCarriers.map((carrier) => (
                 <div key={carrier.id} className={`partner-card ${carrier.status === 'active' ? 'highlighted' : ''}`}>
-                  <div className="partner-card-icon">
-                    <img src={carrier.logo} alt={carrier.name} />
+                  {/* Card Header: Logo + Name/ID */}
+                  <div className="partner-card-header">
+                    <div className="partner-card-icon">
+                      <img src={carrier.logo} alt={carrier.name} />
+                    </div>
+                    <div className="partner-card-title-section">
+                      <h3 className="partner-name">{carrier.name}</h3>
+                      <div className="partner-id">ID: {carrier.code}</div>
+                    </div>
                   </div>
-                  <div className="partner-card-content">
-                    <h3 className="partner-name">{carrier.name}</h3>
-                    <div className="partner-id">ID: {carrier.code}</div>
+
+                  {/* Card Body: Admin + Terminals */}
+                  <div className="partner-card-body">
                     <div className="partner-admin">
                       {carrier.assignedAdmin ? (
                         <>
@@ -459,6 +495,8 @@ const SuperAdminDashboard = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* Card Footer: Status + Action */}
                   <div className="partner-card-footer">
                     <span className={`partner-status ${carrier.status}`}>
                       • {carrier.status === 'active' ? 'ACTIVE' : carrier.status === 'pending' ? 'PENDING SETUP' : 'INACTIVE'}
@@ -606,10 +644,6 @@ const SuperAdminDashboard = () => {
           setSettingsFormData(prev => ({ ...prev, [field]: value }));
         };
 
-        const handleSaveSettings = () => {
-          toast.success('Settings saved successfully');
-        };
-
         const settingsTabs = [
           { 
             id: 'appearance', 
@@ -661,15 +695,6 @@ const SuperAdminDashboard = () => {
 
         return (
           <div className="settings-page">
-            <div className="settings-page-header">
-              <button className="btn-save-settings" onClick={handleSaveSettings}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Save Changes
-              </button>
-            </div>
-
             <div className="settings-layout">
               {/* Settings Sidebar Navigation */}
               <aside className="settings-sidebar">
@@ -1156,7 +1181,7 @@ const SuperAdminDashboard = () => {
         return (
           <div className="dashboard-content">
             <h2 className="content-title">Super Admin Dashboard</h2>
-            <p className="content-description">Manage organizations and carriers</p>
+            {/* <p className="content-description">Manage organizations and carriers</p> */}
           </div>
         );
     }
@@ -1256,6 +1281,22 @@ const SuperAdminDashboard = () => {
              </div>
 
            <div className="dashboard-user">
+            {activeSection === 'carriers' && (
+              <button className="btn-create-carrier">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Create New Carrier
+              </button>
+            )}
+            {activeSection === 'settings' && (
+              <button className="btn-save-settings" onClick={handleSaveSettings}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Save Changes
+              </button>
+            )}
             <span className="user-name">Hello, {user.firstName}</span>
             <ThemeToggle/>
             <div className="user-avatar">

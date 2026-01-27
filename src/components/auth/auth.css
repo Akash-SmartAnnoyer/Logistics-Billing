@@ -6086,6 +6086,16 @@ html, body {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--white-400);
   object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.drawer-logo svg {
+  width: 100%;
+  height: 100%;
 }
 
 .drawer-carrier-name {
@@ -6145,6 +6155,16 @@ html, body {
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--white-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.drawer-admin-avatar svg {
+  width: 100%;
+  height: 100%;
 }
 
 .drawer-terminals-info {
@@ -6602,7 +6622,8 @@ html, body {
   flex-shrink: 0;
 }
 
-.partner-list-logo img {
+.partner-list-logo img,
+.partner-list-logo svg {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -6697,7 +6718,8 @@ html, body {
   flex-shrink: 0;
 }
 
-.partner-card-icon img {
+.partner-card-icon img,
+.partner-card-icon svg {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -6768,6 +6790,15 @@ html, body {
   object-fit: cover;
   border: 1px solid var(--white-400);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.admin-avatar svg {
+  width: 100%;
+  height: 100%;
 }
 
 .assign-admin-btn {

@@ -66,6 +66,63 @@ const SuperAdminDashboard = () => {
     setShowHeaderNav(settingsService.shouldShowHeaderNav());
   }, [activeSection]); // Re-check when settings section is active
 
+  // Helper function to get carrier logo icon
+  const getCarrierLogoIcon = (carrierId, carrierName) => {
+    const colors = [
+      ['#3b82f6', '#1e40af'], // Blue
+      ['#10b981', '#059669'], // Green
+      ['#f59e0b', '#d97706'], // Orange
+      ['#ef4444', '#dc2626'], // Red
+      ['#8b5cf6', '#7c3aed'], // Purple
+    ];
+    const colorPair = colors[carrierId % colors.length];
+    const initials = carrierName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    
+    return (
+      <svg width="100%" height="100%" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="60" rx="8" fill={`url(#gradient-${carrierId})`} />
+        <defs>
+          <linearGradient id={`gradient-${carrierId}`} x1="0" y1="0" x2="60" y2="60">
+            <stop offset="0%" stopColor={colorPair[0]} />
+            <stop offset="100%" stopColor={colorPair[1]} />
+          </linearGradient>
+        </defs>
+        <text x="30" y="38" fontSize="20" fontWeight="700" fill="white" textAnchor="middle" fontFamily="Arial, sans-serif">
+          {initials}
+        </text>
+      </svg>
+    );
+  };
+
+  // Helper function to get avatar icon
+  const getAvatarIcon = (name) => {
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    const colors = [
+      ['#3b82f6', '#1e40af'],
+      ['#10b981', '#059669'],
+      ['#f59e0b', '#d97706'],
+      ['#ef4444', '#dc2626'],
+      ['#8b5cf6', '#7c3aed'],
+    ];
+    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const colorPair = colors[hash % colors.length];
+    
+    return (
+      <svg width="100%" height="100%" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="16" fill={`url(#avatar-gradient-${hash})`} />
+        <defs>
+          <linearGradient id={`avatar-gradient-${hash}`} x1="0" y1="0" x2="32" y2="32">
+            <stop offset="0%" stopColor={colorPair[0]} />
+            <stop offset="100%" stopColor={colorPair[1]} />
+          </linearGradient>
+        </defs>
+        <text x="16" y="21" fontSize="11" fontWeight="600" fill="white" textAnchor="middle" fontFamily="Arial, sans-serif">
+          {initials}
+        </text>
+      </svg>
+    );
+  };
+
   // Mock carriers data
   useEffect(() => {
     const mockCarriers = [
@@ -73,14 +130,14 @@ const SuperAdminDashboard = () => {
         id: 1,
         name: 'Global Logistics Corp',
         code: 'GLC-8829',
-        logo: 'https://via.placeholder.com/60',
+        logo: null, // Will use icon component
         email: 'contact@glc.com',
         phone: '+1-555-0101',
         status: 'active',
         type: 'Carrier',
         createdAt: '2024-01-15',
         address: '123 Logistics Ave, Memphis, TN 38116',
-        assignedAdmin: { name: 'Sarah Jenkins', avatar: 'https://via.placeholder.com/32' },
+        assignedAdmin: { name: 'Sarah Jenkins', avatar: null },
         terminals: { active: 14, pending: 0 },
         totalUsers: 45,
         totalInvoices: 1200,
@@ -90,14 +147,14 @@ const SuperAdminDashboard = () => {
         id: 2,
         name: 'Swift-Link Freight',
         code: 'SLF-4410',
-        logo: 'https://via.placeholder.com/60',
+        logo: null,
         email: 'info@swiftlink.com',
         phone: '+1-555-0102',
         status: 'inactive',
         type: 'Organization',
         createdAt: '2024-02-20',
         address: '55 Glenlake Parkway, Atlanta, GA 30328',
-        assignedAdmin: { name: 'Mark Rivera', avatar: 'https://via.placeholder.com/32' },
+        assignedAdmin: { name: 'Mark Rivera', avatar: null },
         terminals: { active: 0, pending: 0 },
         totalUsers: 32,
         totalInvoices: 890,
@@ -107,7 +164,7 @@ const SuperAdminDashboard = () => {
         id: 3,
         name: 'Nexus Logistics',
         code: 'NEX-1192',
-        logo: 'https://via.placeholder.com/60',
+        logo: null,
         email: 'support@nexus.com',
         phone: '+1-555-0103',
         status: 'pending',
@@ -124,14 +181,14 @@ const SuperAdminDashboard = () => {
         id: 4,
         name: 'Amazon Logistics',
         code: 'AMZ-0045',
-        logo: 'https://via.placeholder.com/60',
+        logo: null,
         email: 'logistics@amazon.com',
         phone: '+1-555-0104',
         status: 'active',
         type: 'Organization',
         createdAt: '2024-01-05',
         address: '410 Terry Ave N, Seattle, WA 98109',
-        assignedAdmin: { name: 'Emily Davis', avatar: 'https://via.placeholder.com/32' },
+        assignedAdmin: { name: 'Emily Davis', avatar: null },
         terminals: { active: 28, pending: 2 },
         totalUsers: 78,
         totalInvoices: 2100,
@@ -141,7 +198,7 @@ const SuperAdminDashboard = () => {
         id: 5,
         name: 'TNT Express',
         code: 'TNT-0056',
-        logo: 'https://via.placeholder.com/60',
+        logo: null,
         email: 'contact@tnt.com',
         phone: '+1-555-0105',
         status: 'pending',
@@ -489,7 +546,11 @@ const SuperAdminDashboard = () => {
                   {/* Card Header: Logo + Name/ID */}
                   <div className="partner-card-header">
                     <div className="partner-card-icon">
-                      <img src={carrier.logo} alt={carrier.name} />
+                      {carrier.logo ? (
+                        <img src={carrier.logo} alt={carrier.name} />
+                      ) : (
+                        getCarrierLogoIcon(carrier.id, carrier.name)
+                      )}
                     </div>
                     <div className="partner-card-title-section">
                       <h3 className="partner-name">{carrier.name}</h3>
@@ -502,7 +563,11 @@ const SuperAdminDashboard = () => {
                     <div className="partner-admin">
                       {carrier.assignedAdmin ? (
                         <>
-                          <img src={carrier.assignedAdmin.avatar} alt={carrier.assignedAdmin.name} className="admin-avatar" />
+                          {carrier.assignedAdmin.avatar ? (
+                            <img src={carrier.assignedAdmin.avatar} alt={carrier.assignedAdmin.name} className="admin-avatar" />
+                          ) : (
+                            <div className="admin-avatar">{getAvatarIcon(carrier.assignedAdmin.name)}</div>
+                          )}
                           <span>{carrier.assignedAdmin.name}</span>
                         </>
                       ) : (
@@ -570,7 +635,11 @@ const SuperAdminDashboard = () => {
                   <div key={carrier.id} className={`partner-list-item ${carrier.status === 'active' ? 'highlighted' : ''}`}>
                     <div className="list-col-logo">
                       <div className="partner-list-logo">
-                        <img src={carrier.logo} alt={carrier.name} />
+                        {carrier.logo ? (
+                          <img src={carrier.logo} alt={carrier.name} />
+                        ) : (
+                          getCarrierLogoIcon(carrier.id, carrier.name)
+                        )}
                       </div>
                     </div>
                     <div className="list-col-name">
@@ -590,7 +659,11 @@ const SuperAdminDashboard = () => {
                     <div className="list-col-admin">
                       {carrier.assignedAdmin ? (
                         <div className="partner-list-admin">
-                          <img src={carrier.assignedAdmin.avatar} alt={carrier.assignedAdmin.name} className="admin-avatar" />
+                          {carrier.assignedAdmin.avatar ? (
+                            <img src={carrier.assignedAdmin.avatar} alt={carrier.assignedAdmin.name} className="admin-avatar" />
+                          ) : (
+                            <div className="admin-avatar">{getAvatarIcon(carrier.assignedAdmin.name)}</div>
+                          )}
                           <span>{carrier.assignedAdmin.name}</span>
                         </div>
                       ) : (
@@ -640,7 +713,11 @@ const SuperAdminDashboard = () => {
                   <div className="drawer-body">
                     <div className="drawer-section">
                       <div className="drawer-logo-section">
-                        <img src={selectedCarrier.logo} alt={selectedCarrier.name} className="drawer-logo" />
+                        {selectedCarrier.logo ? (
+                          <img src={selectedCarrier.logo} alt={selectedCarrier.name} className="drawer-logo" />
+                        ) : (
+                          <div className="drawer-logo">{getCarrierLogoIcon(selectedCarrier.id, selectedCarrier.name)}</div>
+                        )}
                         <div>
                           <h3 className="drawer-carrier-name">{selectedCarrier.name}</h3>
                           <p className="drawer-carrier-code">Code: {selectedCarrier.code}</p>
@@ -658,7 +735,11 @@ const SuperAdminDashboard = () => {
                           <label>Assigned Admin</label>
                           {selectedCarrier.assignedAdmin ? (
                             <div className="drawer-admin-info">
-                              <img src={selectedCarrier.assignedAdmin.avatar} alt={selectedCarrier.assignedAdmin.name} className="drawer-admin-avatar" />
+                              {selectedCarrier.assignedAdmin.avatar ? (
+                                <img src={selectedCarrier.assignedAdmin.avatar} alt={selectedCarrier.assignedAdmin.name} className="drawer-admin-avatar" />
+                              ) : (
+                                <div className="drawer-admin-avatar">{getAvatarIcon(selectedCarrier.assignedAdmin.name)}</div>
+                              )}
                               <p>{selectedCarrier.assignedAdmin.name}</p>
                             </div>
                           ) : (

@@ -5470,34 +5470,36 @@ html, body {
 /* Status Buckets */
 .status-buckets {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
   margin: 2rem 0;
 }
 
 .status-bucket {
   background: var(--white-50);
-  border: 1px solid var(--white-300);
-  border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
+  border: 1px solid var(--white-600);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
   text-align: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .status-bucket:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-light);
-  border-color: var(--white-400);
+  box-shadow: 0 4px 16px var(--shadow-medium);
+  border-color: var(--white-700);
 }
 
 .status-bucket.active {
-  border-color: #10b981;
+  border-color: var(--white-700);
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
 }
 
 .status-bucket.pending {
-  border-color: #f59e0b;
+  border-color: var(--white-700);
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
 }
 
 .status-bucket-header {
@@ -6122,14 +6124,14 @@ html, body {
 /* Summary Cards - New Design */
 .carriers-summary-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .summary-card {
   background: var(--white-50);
-  border: 1px solid var(--white-300);
+  border: 1px solid var(--white-600);
   border-radius: var(--border-radius-md);
   padding: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -6137,8 +6139,8 @@ html, body {
 
 .summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-light);
-  border-color: var(--white-400);
+  box-shadow: 0 4px 16px var(--shadow-medium);
+  border-color: var(--white-700);
 }
 
 .summary-card-header {
@@ -6242,13 +6244,13 @@ html, body {
 /* Partners Grid */
 .partners-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
 .partner-card {
   background: var(--white-50);
-  border: 1px solid var(--white-300);
+  border: 1px solid var(--white-600);
   border-radius: var(--border-radius-md);
   padding: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -6259,13 +6261,18 @@ html, body {
 
 .partner-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-light);
-  border-color: var(--white-400);
+  box-shadow: 0 6px 20px var(--shadow-medium);
+  border-color: var(--white-700);
 }
 
 .partner-card.highlighted {
-  border-color: var(--text-primary);
-  border-width: 2px;
+  box-shadow: 0 4px 16px var(--shadow-medium);
+  border-color: var(--white-700);
+}
+
+.partner-card.highlighted:hover {
+  box-shadow: 0 8px 24px var(--shadow-heavy);
+  transform: translateY(-3px);
 }
 
 .partner-card-icon {
@@ -6482,13 +6489,23 @@ html, body {
 }
 
 /* Responsive Design for Carriers */
-@media (max-width: 1400px) {
+@media (min-width: 1400px) {
   .carriers-summary-cards {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .partners-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1400px) and (min-width: 1024px) {
+  .carriers-summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .partners-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -6509,6 +6526,10 @@ html, body {
   }
 
   .carriers-summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .status-buckets {
     grid-template-columns: 1fr;
   }
 
@@ -6627,6 +6648,63 @@ html, body {
 
 [data-theme="dark"] .terminals-pending {
   color: #fbbf24;
+}
+
+/* Light Theme - Enhanced Border Visibility */
+[data-theme="light"] .summary-card {
+  border-color: #d0d0d0;
+}
+
+[data-theme="light"] .summary-card:hover {
+  border-color: #a0a0a0;
+}
+
+[data-theme="light"] .partner-card {
+  border-color: #d0d0d0;
+}
+
+[data-theme="light"] .partner-card:hover {
+  border-color: #a0a0a0;
+}
+
+[data-theme="light"] .partner-card.highlighted {
+  border-color: #a0a0a0;
+}
+
+[data-theme="light"] .status-bucket {
+  border-color: #d0d0d0;
+}
+
+[data-theme="light"] .status-bucket:hover {
+  border-color: #a0a0a0;
+}
+
+[data-theme="dark"] .summary-card {
+  border-color: var(--white-600);
+}
+
+[data-theme="dark"] .summary-card:hover {
+  border-color: var(--white-700);
+}
+
+[data-theme="dark"] .partner-card {
+  border-color: var(--white-600);
+}
+
+[data-theme="dark"] .partner-card:hover {
+  border-color: var(--white-700);
+}
+
+[data-theme="dark"] .partner-card.highlighted {
+  border-color: var(--white-700);
+}
+
+[data-theme="dark"] .status-bucket {
+  border-color: var(--white-600);
+}
+
+[data-theme="dark"] .status-bucket:hover {
+  border-color: var(--white-700);
 }
 
 /* Dark Theme Sidebar Adjustments */

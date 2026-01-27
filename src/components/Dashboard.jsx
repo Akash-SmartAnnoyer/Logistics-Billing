@@ -434,39 +434,41 @@ const Dashboard = () => {
            <div className="dashboard-header-content">
              <div className="dashboard-nav-wrapper">
                {showHeaderNav && (
-               <div className="header-left">
-               <h1 className="page-title">
-                 {activeSection === 'home' ? 'Dashboard' : 
-                  activeSection === 'procurement' ? 'Procurement & Warehouse' :
-                  activeSection === 'products' ? 'Stock Management' :
-                  activeSection === 'orders' ? 'Customer Orders' :
-                  activeSection === 'billing' ? 'Billing & Invoices' :
-                  activeSection === 'reports' ? 'Reports & Analytics' :
-                  activeSection === 'settings' ? 'Settings' : 'Dashboard'}
-               </h1>
-               <p className="page-subtitle">
-                 {activeSection === 'home' ? 'Overview of your timber depot operations' :
-                  activeSection === 'procurement' ? 'Manage vendor orders and warehouse inventory' :
-                  activeSection === 'products' ? 'Manage product catalog and pricing' :
-                  activeSection === 'orders' ? 'Track customer orders and deliveries' :
-                  activeSection === 'billing' ? 'Manage invoices and payments' :
-                  activeSection === 'reports' ? 'View analytics and generate reports' :
-                  activeSection === 'settings' ? 'Configure application settings' : 'Timber Depot Management'}
-               </p>
-             </div>
-             
-             <nav className="dashboard-nav">
-                 {menuItems.map((item) => (
-                   <button
-                     key={item.id}
-                     className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-                     onClick={() => handleMenuClick(item)}
-                   >
-                     <span className="nav-icon">{item.icon}</span>
-                     <span className="nav-label">{item.label}</span>
-                   </button>
-                 ))}
-               </nav>
+                 <>
+                   <div className="header-left">
+                     <h1 className="page-title">
+                       {activeSection === 'home' ? 'Dashboard' : 
+                        activeSection === 'procurement' ? 'Procurement & Warehouse' :
+                        activeSection === 'products' ? 'Stock Management' :
+                        activeSection === 'orders' ? 'Customer Orders' :
+                        activeSection === 'billing' ? 'Billing & Invoices' :
+                        activeSection === 'reports' ? 'Reports & Analytics' :
+                        activeSection === 'settings' ? 'Settings' : 'Dashboard'}
+                     </h1>
+                     <p className="page-subtitle">
+                       {activeSection === 'home' ? 'Overview of your timber depot operations' :
+                        activeSection === 'procurement' ? 'Manage vendor orders and warehouse inventory' :
+                        activeSection === 'products' ? 'Manage product catalog and pricing' :
+                        activeSection === 'orders' ? 'Track customer orders and deliveries' :
+                        activeSection === 'billing' ? 'Manage invoices and payments' :
+                        activeSection === 'reports' ? 'View analytics and generate reports' :
+                        activeSection === 'settings' ? 'Configure application settings' : 'Timber Depot Management'}
+                     </p>
+                   </div>
+                   
+                   <nav className="dashboard-nav">
+                     {menuItems.map((item) => (
+                       <button
+                         key={item.id}
+                         className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                         onClick={() => handleMenuClick(item)}
+                       >
+                         <span className="nav-icon">{item.icon}</span>
+                         <span className="nav-label">{item.label}</span>
+                       </button>
+                     ))}
+                   </nav>
+                 </>
                )}
              </div>
 

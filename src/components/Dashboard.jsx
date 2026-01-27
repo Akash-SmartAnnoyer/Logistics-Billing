@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { settingsService } from '../services/settingsService';
 import toast from 'react-hot-toast';
+import ThemeToggle from './common/ThemeToggle.jsx';
 import './auth/auth.css';
 
 const Dashboard = () => {
@@ -9,6 +11,9 @@ const Dashboard = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarPinned, setSidebarPinned] = useState(false);
+  const [navigationMode, setNavigationMode] = useState(settingsService.getNavigationMode());
+  const [showSidebar, setShowSidebar] = useState(settingsService.shouldShowSidebar());
+  const [showHeaderNav, setShowHeaderNav] = useState(settingsService.shouldShowHeaderNav());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +24,14 @@ const Dashboard = () => {
     }
     setUser(currentUser);
   }, [navigate]);
+
+  // Sync navigation visibility with settings
+  useEffect(() => {
+    const mode = settingsService.getNavigationMode();
+    setNavigationMode(mode);
+    setShowSidebar(settingsService.shouldShowSidebar());
+    setShowHeaderNav(settingsService.shouldShowHeaderNav());
+  }, [activeSection]); // Re-check when settings section is active
 
   const menuItems = [
     { 
@@ -193,10 +206,72 @@ const Dashboard = () => {
           </div>
         );
       case 'settings':
+        const handleNavigationModeChange = (mode) => {
+          const result = settingsService.setNavigationMode(mode);
+          if (result.success) {
+            setNavigationMode(mode);
+            setShowSidebar(settingsService.shouldShowSidebar());
+            setShowHeaderNav(settingsService.shouldShowHeaderNav());
+            toast.success('Navigation preference saved');
+          } else {
+            toast.error(result.error || 'Failed to save preference');
+          }
+        };
+
         return (
           <div className="dashboard-content">
             <h2 className="content-title">Settings</h2>
             <p className="content-description">Configure your system settings and preferences</p>
+            <div className="settings-container">
+              <div className="settings-section">
+                <h3 className="settings-section-title">Navigation Settings</h3>
+                <div className="settings-item">
+                  <label>Navigation Display</label>
+                  <p className="settings-description">Choose how you want to navigate through the application</p>
+                  <div className="navigation-options">
+                    <label className="navigation-option">
+                      <input
+                        type="radio"
+                        name="navigation-mode"
+                        value={settingsService.getNavigationModes().BOTH}
+                        checked={navigationMode === settingsService.getNavigationModes().BOTH}
+                        onChange={(e) => handleNavigationModeChange(e.target.value)}
+                      />
+                      <div className="navigation-option-content">
+                        <div className="navigation-option-title">Both Sidebar & Header</div>
+                        <div className="navigation-option-description">Show navigation in both sidebar and header</div>
+                      </div>
+                    </label>
+                    <label className="navigation-option">
+                      <input
+                        type="radio"
+                        name="navigation-mode"
+                        value={settingsService.getNavigationModes().SIDEBAR_ONLY}
+                        checked={navigationMode === settingsService.getNavigationModes().SIDEBAR_ONLY}
+                        onChange={(e) => handleNavigationModeChange(e.target.value)}
+                      />
+                      <div className="navigation-option-content">
+                        <div className="navigation-option-title">Sidebar Only</div>
+                        <div className="navigation-option-description">Show navigation only in the sidebar menu</div>
+                      </div>
+                    </label>
+                    <label className="navigation-option">
+                      <input
+                        type="radio"
+                        name="navigation-mode"
+                        value={settingsService.getNavigationModes().HEADER_ONLY}
+                        checked={navigationMode === settingsService.getNavigationModes().HEADER_ONLY}
+                        onChange={(e) => handleNavigationModeChange(e.target.value)}
+                      />
+                      <div className="navigation-option-content">
+                        <div className="navigation-option-title">Header Only</div>
+                        <div className="navigation-option-description">Show navigation only in the header</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         );
       default:
@@ -218,8 +293,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container ${!showSidebar ? 'no-sidebar' : ''}`}>
       {/* Sidebar */}
+      {showSidebar && (
       <aside className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${sidebarPinned ? 'pinned' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
@@ -270,27 +346,33 @@ const Dashboard = () => {
           </nav>
         </div>
       </aside>
+      )}
 
       {/* Main Content Area */}
       <div className="dashboard-main-area">
          {/* Dashboard Header */}
          <header className="dashboard-header">
            <div className="dashboard-header-content">
-             <nav className="dashboard-nav">
-               {menuItems.map((item) => (
-                 <button
-                   key={item.id}
-                   className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-                   onClick={() => handleMenuClick(item)}
-                 >
-                   <span className="nav-icon">{item.icon}</span>
-                   <span className="nav-label">{item.label}</span>
-                 </button>
-               ))}
-             </nav>
+             <div className="dashboard-nav-wrapper">
+               {showHeaderNav && (
+               <nav className="dashboard-nav">
+                 {menuItems.map((item) => (
+                   <button
+                     key={item.id}
+                     className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                     onClick={() => handleMenuClick(item)}
+                   >
+                     <span className="nav-icon">{item.icon}</span>
+                     <span className="nav-label">{item.label}</span>
+                   </button>
+                 ))}
+               </nav>
+               )}
+             </div>
 
            <div className="dashboard-user">
             <span className="user-name">Hello, {user.firstName}</span>
+            <ThemeToggle />
             <div className="user-avatar">
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

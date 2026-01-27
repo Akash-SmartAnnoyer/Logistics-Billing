@@ -14,11 +14,12 @@ const AUTH_ENDPOINTS = {
 const DUMMY_USERS = [
   {
     id: 1,
-    email: 'admin@tms.com',
-    password: 'Admin123!',
-    firstName: 'Admin',
-    lastName: 'User',
+    email: 'superadmin@tms.com',
+    password: 'SuperAdmin123!',
+    firstName: 'Super',
+    lastName: 'Admin',
     phone: '1234567890',
+    role: 'superadmin',
   },
   {
     id: 2,
@@ -27,6 +28,7 @@ const DUMMY_USERS = [
     firstName: 'John',
     lastName: 'Doe',
     phone: '0987654321',
+    role: 'user',
   }
 ];
 
@@ -66,6 +68,7 @@ export const authService = {
             firstName: user.firstName,
             lastName: user.lastName,
             phone: user.phone,
+            role: user.role || 'user',
           },
           tokens,
         },

@@ -15,6 +15,7 @@ const SuperAdminDashboard = () => {
   const [filteredCarriers, setFilteredCarriers] = useState([]);
   const [activeFilters, setActiveFilters] = useState(['all']);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewType, setViewType] = useState('card'); // 'card' or 'list'
   const [selectedCarrier, setSelectedCarrier] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -76,6 +77,7 @@ const SuperAdminDashboard = () => {
         email: 'contact@glc.com',
         phone: '+1-555-0101',
         status: 'active',
+        type: 'Carrier',
         createdAt: '2024-01-15',
         address: '123 Logistics Ave, Memphis, TN 38116',
         assignedAdmin: { name: 'Sarah Jenkins', avatar: 'https://via.placeholder.com/32' },
@@ -92,6 +94,7 @@ const SuperAdminDashboard = () => {
         email: 'info@swiftlink.com',
         phone: '+1-555-0102',
         status: 'inactive',
+        type: 'Organization',
         createdAt: '2024-02-20',
         address: '55 Glenlake Parkway, Atlanta, GA 30328',
         assignedAdmin: { name: 'Mark Rivera', avatar: 'https://via.placeholder.com/32' },
@@ -108,6 +111,7 @@ const SuperAdminDashboard = () => {
         email: 'support@nexus.com',
         phone: '+1-555-0103',
         status: 'pending',
+        type: 'Carrier',
         createdAt: '2024-03-10',
         address: '1200 Harbor Blvd, Weehawken, NJ 07087',
         assignedAdmin: null,
@@ -124,6 +128,7 @@ const SuperAdminDashboard = () => {
         email: 'logistics@amazon.com',
         phone: '+1-555-0104',
         status: 'active',
+        type: 'Organization',
         createdAt: '2024-01-05',
         address: '410 Terry Ave N, Seattle, WA 98109',
         assignedAdmin: { name: 'Emily Davis', avatar: 'https://via.placeholder.com/32' },
@@ -140,6 +145,7 @@ const SuperAdminDashboard = () => {
         email: 'contact@tnt.com',
         phone: '+1-555-0105',
         status: 'pending',
+        type: 'Carrier',
         createdAt: '2024-03-25',
         address: '1000 Corporate Blvd, Suite 200, Norcross, GA 30093',
         assignedAdmin: null,
@@ -451,9 +457,32 @@ const SuperAdminDashboard = () => {
                   Clear Filters
                 </button>
               )}
+
+              {/* View Toggle */}
+              <div className="view-toggle-group">
+                <button 
+                  className={`view-toggle-btn ${viewType === 'card' ? 'active' : ''}`}
+                  onClick={() => setViewType('card')}
+                  title="Card View"
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </button>
+                <button 
+                  className={`view-toggle-btn ${viewType === 'list' ? 'active' : ''}`}
+                  onClick={() => setViewType('list')}
+                  title="List View"
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            {/* Carrier Partner Cards Grid */}
+            {/* Carrier Partner Cards Grid or List */}
+            {viewType === 'card' ? (
             <div className="partners-grid">
               {filteredCarriers.map((carrier) => (
                 <div key={carrier.id} className={`partner-card ${carrier.status === 'active' ? 'highlighted' : ''}`}>
@@ -524,6 +553,77 @@ const SuperAdminDashboard = () => {
                 </div>
               </div>
             </div>
+            ) : (
+            <div className="partners-list">
+              <div className="partners-list-header">
+                <div className="list-col-logo">Logo</div>
+                <div className="list-col-name">Name</div>
+                <div className="list-col-code">Code</div>
+                <div className="list-col-type">Type</div>
+                <div className="list-col-status">Status</div>
+                <div className="list-col-admin">Admin</div>
+                <div className="list-col-terminals">Terminals</div>
+                <div className="list-col-action">Action</div>
+              </div>
+              <div className="partners-list-body">
+                {filteredCarriers.map((carrier) => (
+                  <div key={carrier.id} className={`partner-list-item ${carrier.status === 'active' ? 'highlighted' : ''}`}>
+                    <div className="list-col-logo">
+                      <div className="partner-list-logo">
+                        <img src={carrier.logo} alt={carrier.name} />
+                      </div>
+                    </div>
+                    <div className="list-col-name">
+                      <div className="partner-list-name">{carrier.name}</div>
+                    </div>
+                    <div className="list-col-code">
+                      <div className="partner-list-code">{carrier.code}</div>
+                    </div>
+                    <div className="list-col-type">
+                      <span className="partner-list-type">{carrier.type || 'Carrier'}</span>
+                    </div>
+                    <div className="list-col-status">
+                      <span className={`partner-status ${carrier.status}`}>
+                        • {carrier.status === 'active' ? 'ACTIVE' : carrier.status === 'pending' ? 'PENDING SETUP' : 'INACTIVE'}
+                      </span>
+                    </div>
+                    <div className="list-col-admin">
+                      {carrier.assignedAdmin ? (
+                        <div className="partner-list-admin">
+                          <img src={carrier.assignedAdmin.avatar} alt={carrier.assignedAdmin.name} className="admin-avatar" />
+                          <span>{carrier.assignedAdmin.name}</span>
+                        </div>
+                      ) : (
+                        <button className="assign-admin-btn">
+                          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          Assign
+                        </button>
+                      )}
+                    </div>
+                    <div className="list-col-terminals">
+                      {carrier.terminals.active > 0 ? (
+                        <span className="terminals-active">{carrier.terminals.active} Active</span>
+                      ) : carrier.terminals.pending > 0 ? (
+                        <span className="terminals-pending">{carrier.terminals.pending} Pending</span>
+                      ) : (
+                        <span className="terminals-none">0 Active</span>
+                      )}
+                    </div>
+                    <div className="list-col-action">
+                      <button 
+                        className="partner-action-link"
+                        onClick={() => handleViewDetails(carrier)}
+                      >
+                        {carrier.status === 'pending' ? 'Complete Setup →' : 'View Details →'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
 
             {/* Carrier Details Drawer */}
             {drawerOpen && selectedCarrier && (

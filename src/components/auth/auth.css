@@ -6335,6 +6335,7 @@ html, body {
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .filter-pill {
@@ -6472,11 +6473,180 @@ html, body {
   color: var(--text-primary);
 }
 
+/* View Toggle */
+.view-toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  background: var(--white-100);
+  border: 1px solid var(--white-300);
+  border-radius: var(--border-radius-md);
+  padding: 0.25rem;
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle-btn:hover {
+  background: var(--white-200);
+  color: var(--text-primary);
+}
+
+.view-toggle-btn.active {
+  background: var(--text-primary);
+  color: var(--white-50);
+}
+
+.view-toggle-btn.active:hover {
+  background: var(--text-primary);
+  opacity: 0.9;
+}
+
+.view-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* Partners Grid */
 .partners-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+}
+
+/* Partners List View */
+.partners-list {
+  background: var(--white-50);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  overflow: hidden;
+}
+
+.partners-list-header {
+  display: grid;
+  grid-template-columns: 60px 1.5fr 1fr 1fr 1fr 1.5fr 1fr 120px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--white-100);
+  border-bottom: 1px solid var(--white-300);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  align-items: center;
+}
+
+.partners-list-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.partner-list-item {
+  display: grid;
+  grid-template-columns: 60px 1.5fr 1fr 1fr 1fr 1.5fr 1fr 120px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--white-300);
+  transition: all 0.2s ease;
+  align-items: center;
+}
+
+.partner-list-item:hover {
+  background: var(--white-100);
+}
+
+.partner-list-item.highlighted {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(16, 185, 129, 0.01) 100%);
+}
+
+.partner-list-item:last-child {
+  border-bottom: none;
+}
+
+.list-col-logo,
+.list-col-name,
+.list-col-code,
+.list-col-type,
+.list-col-status,
+.list-col-admin,
+.list-col-terminals,
+.list-col-action {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.partner-list-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  background: var(--white-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.partner-list-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.partner-list-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partner-list-code {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partner-list-type {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  background: var(--white-200);
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+}
+
+.partner-list-admin {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.partner-list-admin span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .partner-card {
@@ -6836,6 +7006,31 @@ html, body {
   .clear-filters-link {
     margin-left: 0;
     order: 2;
+  }
+
+  .view-toggle-group {
+    margin-left: 0;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .partners-list-header {
+    grid-template-columns: 50px 1fr 0.8fr 0.8fr 0.8fr 1fr 0.8fr 100px;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.7rem;
+  }
+
+  .partner-list-item {
+    grid-template-columns: 50px 1fr 0.8fr 0.8fr 0.8fr 1fr 0.8fr 100px;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .partner-list-name,
+  .partner-list-code {
+    font-size: 0.8125rem;
   }
 
   .drawer-content {

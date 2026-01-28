@@ -278,7 +278,7 @@ const SuperAdminDashboard = () => {
   const bottomMenuItems = [
     { 
       id: 'help', 
-      label: 'Help & Information', 
+      label: 'Help', 
       icon: (
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1431,37 +1431,35 @@ const SuperAdminDashboard = () => {
       </aside>
       )}
 
-      {/* Main Content Area */}
-      <div className="dashboard-main-area">
-         {/* Dashboard Header */}
-         <header className="dashboard-header">
-           <div className="dashboard-header-content">
-             <div className="dashboard-nav-wrapper">
-               <div className="page-title-section">
-                 {menuItems.find(item => item.id === activeSection)?.icon && (
-                   <span className="page-title-icon">
-                     {menuItems.find(item => item.id === activeSection).icon}
-                   </span>
-                 )}
-                 <h1 className="page-title">{getPageTitle()}</h1>
-               </div>
-               {showHeaderNav && (
-               <nav className="dashboard-nav">
-                 {menuItems.map((item) => (
-                   <button
-                     key={item.id}
-                     className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-                     onClick={() => handleMenuClick(item)}
-                   >
-                     <span className="nav-icon">{item.icon}</span>
-                     <span className="nav-label">{item.label}</span>
-                   </button>
-                 ))}
-               </nav>
-               )}
-             </div>
+      {/* Dashboard Header - Separate Section */}
+      <header className="dashboard-header-section">
+        <div className="dashboard-header-content">
+          <div className="dashboard-nav-wrapper">
+            <div className="page-title-section">
+              {menuItems.find(item => item.id === activeSection)?.icon && (
+                <span className="page-title-icon">
+                  {menuItems.find(item => item.id === activeSection).icon}
+                </span>
+              )}
+              <h1 className="page-title">{getPageTitle()}</h1>
+            </div>
+            {showHeaderNav && (
+            <nav className="dashboard-nav">
+              {menuItems.map((item) => (
+                <button
+                  key={item.id}
+                  className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                  onClick={() => handleMenuClick(item)}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+            </nav>
+            )}
+          </div>
 
-           <div className="dashboard-user">
+          <div className="dashboard-user">
             {activeSection === 'carriers' && (
               <button className="btn-create-carrier">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1498,11 +1496,13 @@ const SuperAdminDashboard = () => {
         </div>
       </header>
 
-      {/* Dashboard Content */}
-      <main className="dashboard-main">
-        {renderContent()}
-      </main>
-    </div>
+      {/* Main Content Area */}
+      <div className="dashboard-main-area">
+        {/* Dashboard Content */}
+        <main className="dashboard-main">
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 };

@@ -1031,7 +1031,7 @@ body {
 }
 
 .dashboard-sidebar.pinned ~ .dashboard-header-section {
-  left: calc(200px + 0.5rem);
+  left: calc(200px + 0.25rem);
 }
 
 .dashboard-sidebar.pinned ~ .dashboard-main-area {
@@ -1043,7 +1043,7 @@ body {
 }
 
 .dashboard-sidebar:not(.pinned).collapsed ~ .dashboard-header-section {
-  left: calc(70px + 0.5rem);
+  left: calc(70px + 0.25rem);
 }
 
 .dashboard-sidebar:not(.pinned).collapsed ~ .dashboard-main-area {
@@ -1055,7 +1055,7 @@ body {
 }
 
 .dashboard-sidebar:not(.pinned):not(.collapsed) ~ .dashboard-header-section {
-  left: calc(200px + 0.5rem);
+  left: calc(200px + 0.25rem);
 }
 
 .dashboard-sidebar:not(.pinned):not(.collapsed) ~ .dashboard-main-area {
@@ -1068,7 +1068,7 @@ body {
 
 /* When sidebar is hidden */
 .dashboard-container.no-sidebar .dashboard-header-section {
-  left: 0.5rem;
+  left: 0.25rem;
 }
 
 .dashboard-container.no-sidebar .dashboard-main-area {
@@ -1088,7 +1088,7 @@ body {
   box-shadow: none;
   position: fixed;
   top: 0.5rem;
-  left: calc(200px + 0.5rem);
+  left: calc(200px + 0.25rem);
   right: 0.5rem;
   z-index: 1001;
   height: 60px;
@@ -5363,7 +5363,7 @@ html, body {
   }
 
   .dashboard-header-section {
-    left: calc(70px + 0.375rem);
+    left: calc(70px + 0.25rem);
     right: 0.375rem;
     top: 0.375rem;
     height: 56px;

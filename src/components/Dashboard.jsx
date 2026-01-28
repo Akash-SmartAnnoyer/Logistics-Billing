@@ -933,7 +933,7 @@ const Dashboard = () => {
 
       {/* Dashboard Header - Separate Section */}
       <header className="dashboard-header-section">
-        <div className="dashboard-header-content">
+           <div className="dashboard-header-content">
           <div className="dashboard-nav-wrapper">
             <div className="page-title-section">
               {menuItems.find(item => item.id === activeSection)?.icon && (
@@ -944,22 +944,22 @@ const Dashboard = () => {
               <h1 className="page-title">{getPageTitle()}</h1>
             </div>
             {showHeaderNav && (
-            <nav className="dashboard-nav">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-                  onClick={() => handleMenuClick(item)}
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
-                </button>
-              ))}
-            </nav>
+             <nav className="dashboard-nav">
+               {menuItems.map((item) => (
+                 <button
+                   key={item.id}
+                   className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                   onClick={() => handleMenuClick(item)}
+                 >
+                   <span className="nav-icon">{item.icon}</span>
+                   <span className="nav-label">{item.label}</span>
+                 </button>
+               ))}
+             </nav>
             )}
           </div>
 
-          <div className="dashboard-user">
+           <div className="dashboard-user">
             {activeSection === 'settings' && (
               <button className="btn-save-settings" onClick={handleSaveSettings}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -990,11 +990,11 @@ const Dashboard = () => {
 
       {/* Main Content Area */}
       <div className="dashboard-main-area">
-        {/* Dashboard Content */}
-        <main className="dashboard-main">
-          {renderContent()}
-        </main>
-      </div>
+      {/* Dashboard Content */}
+      <main className="dashboard-main">
+        {renderContent()}
+      </main>
+    </div>
     </div>
   );
 };

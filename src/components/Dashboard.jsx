@@ -10,7 +10,8 @@ import Billing from './Billing';
 import Reports from './Reports';
 import Settings from './Settings';
 import ThemeToggle from './common/ThemeToggle.jsx';
-import logiNexLogo from '../assets/logos/LogiNex-logo-Transparent.png';
+import logiNexLogo from '../assets/logos/LogiNex-logo-Transparent-cropped.png';
+import logiNexLogoCropped from '../assets/logos/LogiNex-cropped.png';
 import './auth/auth.css';
 
 const Dashboard = () => {
@@ -173,6 +174,10 @@ const Dashboard = () => {
       setSidebarPinned(true);
       setSidebarCollapsed(false);
     }
+  };
+
+  const toggleSidebarCollapse = () => {
+    setSidebarCollapsed((prev) => !prev);
   };
 
   const handleLogout = async () => {
@@ -882,43 +887,23 @@ const Dashboard = () => {
       {/* Sidebar */}
       {showSidebar && (
       <aside className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${sidebarPinned ? 'pinned' : ''}`}>
-        <div className="sidebar-header">
-          <div className="sidebar-logo">
-            <img src={logiNexLogo} alt="LogiNex" className="sidebar-logo-img" />
-            {!sidebarCollapsed && <span className="sidebar-title">LogiNex</span>}
+        <div className="sidebar-content">
+          <div className="sidebar-header">
+            <div className="sidebar-logo">
+              <img
+                src={sidebarCollapsed ? logiNexLogoCropped : logiNexLogo}
+                alt="LogiNex"
+                className={`sidebar-logo-img ${sidebarCollapsed ? 'collapsed' : ''}`}
+              />
+            </div>
           </div>
-          <button 
-            className="sidebar-pin-btn"
-            onClick={toggleSidebarPin}
-            title={sidebarPinned ? 'Unpin Sidebar' : 'Pin Sidebar'}
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4 19h6v-6H4v6zM4 5h6V1H4v4zM15 3h5l-5 5V3z" />
-            </svg>
-          </button>
-        </div>
-        
-        <nav className="sidebar-nav">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              className={`sidebar-item ${activeSection === item.id ? 'active' : ''}`}
-              onClick={() => handleMenuClick(item)}
-              title={sidebarCollapsed ? item.label : ''}
-            >
-              <span className="sidebar-icon">{item.icon}</span>
-              {!sidebarCollapsed && <span className="sidebar-label">{item.label}</span>}
-            </button>
-          ))}
-        </nav>
-
-        <div className="sidebar-bottom">
-          <nav className="sidebar-bottom-nav">
-            {bottomMenuItems.map((item) => (
+          
+          <nav className="sidebar-nav">
+            {menuItems.map((item) => (
               <button
                 key={item.id}
                 className={`sidebar-item ${activeSection === item.id ? 'active' : ''}`}
-                onClick={() => handleBottomMenuClick(item)}
+                onClick={() => handleMenuClick(item)}
                 title={sidebarCollapsed ? item.label : ''}
               >
                 <span className="sidebar-icon">{item.icon}</span>
@@ -926,7 +911,40 @@ const Dashboard = () => {
               </button>
             ))}
           </nav>
+
+          <div className="sidebar-bottom">
+            <nav className="sidebar-bottom-nav">
+              {bottomMenuItems.map((item) => (
+                <button
+                  key={item.id}
+                  className={`sidebar-item ${activeSection === item.id ? 'active' : ''}`}
+                  onClick={() => handleBottomMenuClick(item)}
+                  title={sidebarCollapsed ? item.label : ''}
+                >
+                  <span className="sidebar-icon">{item.icon}</span>
+                  {!sidebarCollapsed && <span className="sidebar-label">{item.label}</span>}
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
+
+        <button
+          className="sidebar-toggle-edge-btn"
+          onClick={toggleSidebarCollapse}
+          title={sidebarCollapsed ? 'Expand menu' : 'Collapse menu'}
+          aria-label={sidebarCollapsed ? 'Expand menu' : 'Collapse menu'}
+        >
+          {sidebarCollapsed ? (
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          ) : (
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          )}
+        </button>
       </aside>
       )}
 

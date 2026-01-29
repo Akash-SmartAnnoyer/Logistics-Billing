@@ -7977,3 +7977,391 @@ html, body {
 [data-theme="light"] .sidebar-item svg {
   color: inherit;
 }
+
+/* ========== Create Order (timeline tabs + sections) ========== */
+.create-order-page {
+  padding: 0 0 2rem;
+  max-width: 100%;
+}
+
+.create-order-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.create-order-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--white-200);
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.create-order-back:hover {
+  background: var(--white-300);
+  border-color: var(--white-500);
+}
+
+.create-order-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.create-order-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--white-400);
+  overflow-x: auto;
+}
+
+.create-order-tab {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  background: var(--white-200);
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.create-order-tab:hover {
+  background: var(--white-300);
+  border-color: var(--white-500);
+  color: var(--text-primary);
+}
+
+.create-order-tab.active {
+  background: var(--accent-gradient);
+  border-color: var(--white-500);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.create-order-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.create-order-card {
+  background: var(--white-100);
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-lg);
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.create-order-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--white-400);
+}
+
+.create-order-header-card {
+  margin-bottom: 0.5rem;
+}
+
+.create-order-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.create-order-form-grid .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.create-order-form-grid .create-order-subtitle,
+.create-order-form-grid .create-order-form-grid .create-order-subtitle {
+  grid-column: 1 / -1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0.5rem 0 0;
+}
+
+.create-order-subtitle:first-of-type {
+  margin-top: 0;
+}
+
+.create-order-hint,
+.create-order-msg {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.create-order-msg-info {
+  color: var(--text-secondary);
+  padding: 0.5rem 0.75rem;
+  background: var(--white-200);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--white-600);
+}
+
+.create-order-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.create-order-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.create-order-toggle input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--text-primary);
+}
+
+.create-order-btn-secondary {
+  padding: 0.5rem 1rem;
+  background: var(--white-200);
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.create-order-btn-secondary:hover {
+  background: var(--white-300);
+  border-color: var(--white-500);
+}
+
+.create-order-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.create-order-btn-icon:hover {
+  color: var(--text-primary);
+  background: var(--white-200);
+}
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group-inline .form-input {
+  flex: 1;
+}
+
+.create-order-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.create-order-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.create-order-table th,
+.create-order-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--white-400);
+}
+
+.create-order-table th {
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--white-200);
+}
+
+.create-order-table .form-input-sm {
+  width: 100%;
+  min-width: 60px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.create-order-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--white-400);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.create-order-totals strong {
+  margin-left: 0.25rem;
+}
+
+.create-order-dropzone {
+  position: relative;
+  padding: 2rem;
+  border: 2px dashed var(--white-500);
+  border-radius: var(--border-radius-lg);
+  background: var(--white-200);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.create-order-dropzone:hover,
+.create-order-dropzone:focus-within {
+  border-color: var(--white-600);
+  background: var(--white-300);
+}
+
+.create-order-dropzone p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.create-order-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.create-order-doc-list {
+  margin: 1rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.create-order-legs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.create-order-leg-card {
+  padding: 1rem;
+  background: var(--white-200);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--white-400);
+}
+
+.create-order-leg-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.create-order-notes-input {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.create-order-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--white-400);
+}
+
+.create-order-btn-cancel {
+  padding: 0.6rem 1.25rem;
+  background: var(--white-200);
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.create-order-btn-cancel:hover {
+  background: var(--white-300);
+  border-color: var(--white-500);
+}
+
+.create-order-btn-save {
+  padding: 0.6rem 1.25rem;
+  background: var(--text-primary);
+  border: 1px solid var(--text-primary);
+  border-radius: var(--border-radius-md);
+  color: var(--white-100);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.02s ease;
+}
+
+.create-order-btn-save:hover {
+  opacity: 0.9;
+}
+
+.create-order-page .form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.create-order-page .form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--white-100);
+  transition: border-color 0.2s ease;
+}
+
+.create-order-page .form-input:focus {
+  outline: none;
+  border-color: var(--white-600);
+}
+
+.create-order-page select.form-input {
+  cursor: pointer;
+  appearance: auto;
+}

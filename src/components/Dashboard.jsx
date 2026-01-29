@@ -17,6 +17,7 @@ import './auth/auth.css';
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState('home');
+  const [createOrderView, setCreateOrderView] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarPinned, setSidebarPinned] = useState(false);
   const [navigationMode, setNavigationMode] = useState(settingsService.getNavigationMode());
@@ -190,6 +191,7 @@ const Dashboard = () => {
 
   // Get page title based on active section
   const getPageTitle = () => {
+    if (activeSection === 'orders' && createOrderView) return 'Create Order';
     const currentMenuItem = menuItems.find(item => item.id === activeSection);
     return currentMenuItem ? currentMenuItem.label : 'Dashboard';
   };
@@ -309,7 +311,7 @@ const Dashboard = () => {
       case 'products':
         return <Products />;
       case 'orders':
-        return <Orders />;
+        return <Orders createOrderView={createOrderView} setCreateOrderView={setCreateOrderView} />;
       case 'billing':
         return <Billing />;
       case 'reports':
@@ -953,12 +955,30 @@ const Dashboard = () => {
            <div className="dashboard-header-content">
           <div className="dashboard-nav-wrapper">
             <div className="page-title-section">
-              {menuItems.find(item => item.id === activeSection)?.icon && (
-                <span className="page-title-icon">
-                  {menuItems.find(item => item.id === activeSection).icon}
-                </span>
+              {activeSection === 'orders' && createOrderView ? (
+                <>
+                  <button
+                    type="button"
+                    className="page-title-back-btn"
+                    onClick={() => setCreateOrderView(false)}
+                  >
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to Orders
+                  </button>
+                  <h1 className="page-title">Create Order</h1>
+                </>
+              ) : (
+                <>
+                  {menuItems.find(item => item.id === activeSection)?.icon && (
+                    <span className="page-title-icon">
+                      {menuItems.find(item => item.id === activeSection).icon}
+                    </span>
+                  )}
+                  <h1 className="page-title">{getPageTitle()}</h1>
+                </>
               )}
-              <h1 className="page-title">{getPageTitle()}</h1>
             </div>
             {showHeaderNav && (
              <nav className="dashboard-nav">
@@ -1008,7 +1028,7 @@ const Dashboard = () => {
       {/* Main Content Area */}
       <div className="dashboard-main-area">
       {/* Dashboard Content */}
-      <main className="dashboard-main">
+      <main className={`dashboard-main ${activeSection === 'orders' && createOrderView ? 'create-order-active' : ''}`}>
         {renderContent()}
       </main>
     </div>

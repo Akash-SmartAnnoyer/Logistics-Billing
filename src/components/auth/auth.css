@@ -1255,6 +1255,30 @@ body {
   min-width: fit-content;
 }
 
+.page-title-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--white-200);
+  border: 1px solid var(--white-400);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.page-title-back-btn:hover {
+  background: var(--white-300);
+  border-color: var(--white-500);
+}
+
+.page-title-back-btn svg {
+  flex-shrink: 0;
+}
+
 .page-title-icon {
   display: flex;
   align-items: center;
@@ -7979,9 +8003,25 @@ html, body {
 }
 
 /* ========== Create Order (timeline tabs + sections) ========== */
+/* Create Order: grey background; no top gap so timeline sits at top; scroll padding so sections don't sit under sticky bar */
+.dashboard-main.create-order-active {
+  padding-top: 0;
+  padding-bottom: 2rem;
+  background: var(--white-600);
+  min-height: 100%;
+  scroll-padding-top: 5rem;
+}
+
+[data-theme="dark"] .dashboard-main.create-order-active {
+  background: var(--white-200);
+}
+
 .create-order-page {
   padding: 0 0 2rem;
   max-width: 100%;
+  padding-top: 0;
+  margin-top: 0;
+  background: transparent;
 }
 
 .create-order-header {
@@ -8018,56 +8058,97 @@ html, body {
 }
 
 .create-order-timeline {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.75rem 0;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--white-400);
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: space-evenly;
+  gap: 0;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--white-400);
   overflow-x: auto;
+  background: var(--white-50);
+  box-shadow: 0 2px 12px var(--shadow-light), 0 1px 0 var(--white-400);
+  min-height: 2.5rem;
+  isolation: isolate;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-theme="dark"] .create-order-timeline {
+  background: var(--white-100);
+  border-color: var(--white-500);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 1px 0 var(--white-400);
 }
 
 .create-order-tab {
-  flex-shrink: 0;
-  padding: 0.5rem 1rem;
-  background: var(--white-200);
-  border: 1px solid var(--white-400);
-  border-radius: var(--border-radius-md);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .create-order-tab:hover {
-  background: var(--white-300);
-  border-color: var(--white-500);
+  background: var(--white-200);
   color: var(--text-primary);
 }
 
 .create-order-tab.active {
-  background: var(--accent-gradient);
-  border-color: var(--white-500);
   color: var(--text-primary);
-  box-shadow: 0 2px 8px var(--shadow-light);
+  font-weight: 600;
+  border-bottom-color: #1a1a1a;
+  background: transparent;
+}
+
+[data-theme="dark"] .create-order-tab.active {
+  border-bottom-color: #ffffff;
 }
 
 .create-order-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  padding-top: 0.25rem;
 }
 
+/* Individual section cards – white on grey, rounded, separated */
 .create-order-card {
-  background: var(--white-100);
+  background: var(--white-50);
   border: 1px solid var(--white-400);
-  border-radius: var(--border-radius-lg);
-  padding: 1.25rem;
-  box-shadow: 0 2px 8px var(--shadow-light);
+  border-radius: var(--border-radius-xl);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px var(--shadow-light), 0 1px 3px var(--shadow-medium);
+  scroll-margin-top: 5rem;
+}
+
+[data-theme="dark"] .create-order-card {
+  background: var(--white-100);
+  border-color: var(--white-500);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 .create-order-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -8076,8 +8157,68 @@ html, body {
   border-bottom: 1px solid var(--white-400);
 }
 
-.create-order-header-card {
-  margin-bottom: 0.5rem;
+.create-order-card-title .create-order-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.create-order-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.create-order-card-subtitle .create-order-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+/* Create Order icons – currentColor for light/dark theme */
+.create-order-icon {
+  flex-shrink: 0;
+  color: currentColor;
+  stroke: currentColor;
+}
+
+.create-order-icon-title {
+  width: 18px;
+  height: 18px;
+}
+
+.create-order-icon-label {
+  width: 14px;
+  height: 14px;
+}
+
+.create-order-tab .create-order-icon {
+  flex-shrink: 0;
+}
+
+/* Header + References combined section */
+.create-order-header-references-card {
+  border-left: 3px solid var(--white-600);
+}
+
+[data-theme="dark"] .create-order-header-references-card {
+  border-left-color: var(--white-500);
+}
+
+.create-order-section-divider {
+  height: 1px;
+  background: var(--white-400);
+  margin: 1.25rem 0;
+  border: none;
+}
+
+.create-order-card-subtitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
 }
 
 .create-order-form-grid {
@@ -8338,11 +8479,18 @@ html, body {
 }
 
 .create-order-page .form-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 0.35rem;
+}
+
+.create-order-page .form-label .create-order-icon {
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .create-order-page .form-input {

@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import './auth/auth.css';
 import CreateOrder from './CreateOrder';
 
-const Orders = () => {
+const Orders = ({ createOrderView = false, setCreateOrderView }) => {
   const [activeTab, setActiveTab] = useState('estimates');
-  const [showCreateOrderView, setShowCreateOrderView] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEstimateModal, setShowEstimateModal] = useState(false);
   const [showEstimateEditModal, setShowEstimateEditModal] = useState(false);
@@ -659,14 +658,14 @@ const Orders = () => {
   const currentOrders = getCurrentOrders();
 
   const handleCreateOrderSave = () => {
-    setShowCreateOrderView(false);
+    setCreateOrderView?.(false);
     alert('Order created successfully!');
   };
 
-  if (showCreateOrderView) {
+  if (createOrderView) {
     return (
       <CreateOrder
-        onCancel={() => setShowCreateOrderView(false)}
+        onCancel={() => setCreateOrderView?.(false)}
         onSave={handleCreateOrderSave}
       />
     );
@@ -686,7 +685,7 @@ const Orders = () => {
         </button>
         <button 
           className="add-btn"
-          onClick={() => setShowCreateOrderView(true)}
+          onClick={() => setCreateOrderView?.(true)}
         >
           <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

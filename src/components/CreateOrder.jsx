@@ -12,6 +12,27 @@ const SERVICE_TYPES = [
 
 const MEASUREMENT_TYPES = ['BOX', 'PALLET', 'CRATE', 'ENVELOPE', 'TUBE', 'DRUM', 'OTHER'];
 
+/* Icons – stroke currentColor for light/dark theme */
+const IconRef = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>;
+const IconAddress = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+const IconMeasure = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>;
+const IconDoc = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+const IconLegs = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1h1m4-1V6a1 1 0 00-1-1h-1M4 17a1 1 0 001 1h1M4 17v-4m0 0h4m-4 0v4m8 0v-4m0 0h4m-4 0v4" /></svg>;
+const IconStorage = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>;
+const IconNotes = () => <svg className="create-order-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>;
+const IconHeader = () => <svg className="create-order-icon create-order-icon-title" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>;
+const IconService = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>;
+const IconShipper = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
+const IconDocSmall = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+const IconLocation = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>;
+const IconCalendar = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
+const IconClock = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const IconUser = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
+const IconPhone = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>;
+const IconBuilding = () => <svg className="create-order-icon create-order-icon-label" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
+const IconArchive = () => <svg className="create-order-icon create-order-icon-title" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>;
+const IconPencil = () => <svg className="create-order-icon create-order-icon-title" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>;
+
 const CreateOrder = ({ onCancel, onSave }) => {
   const [activeStep, setActiveStep] = useState('references');
   const [serviceType, setServiceType] = useState('');
@@ -92,48 +113,42 @@ const CreateOrder = ({ onCancel, onSave }) => {
   };
 
   const steps = [
-    { key: 'references', label: 'References' },
-    { key: 'addresses', label: 'Addresses' },
-    { key: 'measurements', label: 'Measurements' },
-    { key: 'documents', label: 'Documents' },
-    { key: 'legs', label: 'Legs' },
-    { key: 'storage', label: 'Storage' },
-    { key: 'notes', label: 'Notes' },
+    { key: 'references', label: 'References', Icon: IconRef },
+    { key: 'addresses', label: 'Addresses', Icon: IconAddress },
+    { key: 'measurements', label: 'Measurements', Icon: IconMeasure },
+    { key: 'documents', label: 'Documents', Icon: IconDoc },
+    { key: 'legs', label: 'Legs', Icon: IconLegs },
+    { key: 'storage', label: 'Storage', Icon: IconStorage },
+    { key: 'notes', label: 'Notes', Icon: IconNotes },
   ];
 
   return (
     <div className="create-order-page">
-      <div className="create-order-header">
-        <button type="button" className="create-order-back" onClick={onCancel}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Orders
-        </button>
-        <h1 className="create-order-title">Create Order</h1>
-      </div>
-
       {/* Timeline tabs */}
       <div className="create-order-timeline">
-        {steps.map((step) => (
-          <button
-            key={step.key}
-            type="button"
-            className={`create-order-tab ${activeStep === step.key ? 'active' : ''}`}
-            onClick={() => scrollToSection(step.key)}
-          >
-            {step.label}
-          </button>
-        ))}
+        {steps.map((step) => {
+          const StepIcon = step.Icon;
+          return (
+            <button
+              key={step.key}
+              type="button"
+              className={`create-order-tab ${activeStep === step.key ? 'active' : ''}`}
+              onClick={() => scrollToSection(step.key)}
+            >
+              <StepIcon />
+              <span>{step.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="create-order-content">
-        {/* Header: Service type, Shipper, HAWB, MAWB */}
-        <div className="create-order-card create-order-header-card">
-          <h3 className="create-order-card-title">Order header</h3>
+        {/* 1. Header + References – single section */}
+        <section className="create-order-card create-order-header-references-card" ref={(el) => (sectionRefs.current.references = el)}>
+          <h3 className="create-order-card-title"><IconHeader /> 1. Header &amp; References</h3>
           <div className="create-order-form-grid">
             <div className="form-group">
-              <label className="form-label">Service type</label>
+              <label className="form-label"><IconService /> Service type</label>
               <select className="form-input" value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
                 <option value="">Select service type</option>
                 {SERVICE_TYPES.map((opt) => (
@@ -142,7 +157,7 @@ const CreateOrder = ({ onCancel, onSave }) => {
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Shipper</label>
+              <label className="form-label"><IconShipper /> Shipper</label>
               <select className="form-input" value={shipper} onChange={(e) => setShipper(e.target.value)}>
                 <option value="">Select shipper</option>
                 <option value="shipper1">Shipper 1</option>
@@ -150,19 +165,16 @@ const CreateOrder = ({ onCancel, onSave }) => {
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">HAWB (House Airway Bill)</label>
+              <label className="form-label"><IconDocSmall /> HAWB (House Airway Bill)</label>
               <input type="text" className="form-input" placeholder="HAWB" value={hawb} onChange={(e) => setHawb(e.target.value)} />
             </div>
             <div className="form-group">
-              <label className="form-label">MAWB (Master Airway Bill)</label>
+              <label className="form-label"><IconDocSmall /> MAWB (Master Airway Bill)</label>
               <input type="text" className="form-input" placeholder="MAWB" value={mawb} onChange={(e) => setMawb(e.target.value)} />
             </div>
           </div>
-        </div>
-
-        {/* 1. References */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.references = el)}>
-          <h3 className="create-order-card-title">1. References</h3>
+          <div className="create-order-section-divider" />
+          <h4 className="create-order-card-subtitle"><IconRef /> Reference numbers</h4>
           <div className="create-order-form-grid">
             {references.map((ref, i) => (
               <div key={i} className="form-group form-group-inline">
@@ -202,53 +214,58 @@ const CreateOrder = ({ onCancel, onSave }) => {
           </div>
         </section>
 
-        {/* 2. Addresses */}
+        {/* 2a. From address – separate section */}
         <section className="create-order-card" ref={(el) => (sectionRefs.current.addresses = el)}>
-          <h3 className="create-order-card-title">2. Addresses</h3>
+          <h3 className="create-order-card-title"><IconAddress /> 2. From address</h3>
           {!serviceType && <p className="create-order-hint">Select a service type above to see address fields.</p>}
           {serviceType && (
-            <>
-              {isMultiLeg && needsWarehouse && (
-                <p className="create-order-msg create-order-msg-info">Multi-leg with linehaul: second address may be warehouse. Warehouse address is optional below.</p>
-              )}
-              <div className="create-order-form-grid">
-                <h4 className="create-order-subtitle">From address</h4>
-                {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
-                  <div key={f} className="form-group">
-                    <label className="form-label">{f.replace(/([A-Z])/g, ' $1').trim()}</label>
-                    <input type="text" className="form-input" placeholder={f} value={fromAddress[f]} onChange={(e) => setFromAddress((a) => ({ ...a, [f]: e.target.value }))} />
-                  </div>
-                ))}
-              </div>
-              {isMultiLeg && (
-                <div className="create-order-form-grid">
-                  <h4 className="create-order-subtitle">To address</h4>
-                  {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
-                    <div key={f} className="form-group">
-                      <label className="form-label">{f.replace(/([A-Z])/g, ' $1').trim()}</label>
-                      <input type="text" className="form-input" value={toAddress[f]} onChange={(e) => setToAddress((a) => ({ ...a, [f]: e.target.value }))} />
-                    </div>
-                  ))}
+            <div className="create-order-form-grid">
+              {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
+                <div key={f} className="form-group">
+                  <label className="form-label">{f.replace(/([A-Z])/g, ' $1').trim()}</label>
+                  <input type="text" className="form-input" placeholder={f} value={fromAddress[f]} onChange={(e) => setFromAddress((a) => ({ ...a, [f]: e.target.value }))} />
                 </div>
-              )}
-              {needsWarehouse && (
-                <div className="create-order-form-grid">
-                  <h4 className="create-order-subtitle">Warehouse address (if linehaul)</h4>
-                  {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
-                    <div key={f} className="form-group">
-                      <label className="form-label">{f.replace(/([A-Z])/g, ' $1').trim()}</label>
-                      <input type="text" className="form-input" value={warehouseAddress[f]} onChange={(e) => setWarehouseAddress((a) => ({ ...a, [f]: e.target.value }))} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
+              ))}
+            </div>
           )}
         </section>
 
+        {/* 2b. To address – separate section (when multi leg) */}
+        {serviceType && isMultiLeg && (
+          <section className="create-order-card" ref={(el) => (sectionRefs.current.toAddress = el)}>
+            <h3 className="create-order-card-title"><IconAddress /> 2. To address</h3>
+            {needsWarehouse && (
+              <p className="create-order-msg create-order-msg-info">Multi-leg with linehaul: second address may be warehouse. Warehouse address is optional below.</p>
+            )}
+            <div className="create-order-form-grid">
+              {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
+                <div key={f} className="form-group">
+                  <label className="form-label">{f.replace(/([A-Z])/g, ' $1').trim()}</label>
+                  <input type="text" className="form-input" value={toAddress[f]} onChange={(e) => setToAddress((a) => ({ ...a, [f]: e.target.value }))} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 2c. Warehouse address – separate section (when linehaul) */}
+        {serviceType && needsWarehouse && (
+          <section className="create-order-card" ref={(el) => (sectionRefs.current.warehouseAddress = el)}>
+            <h3 className="create-order-card-title"><IconStorage /> 2. Warehouse address (if linehaul)</h3>
+            <div className="create-order-form-grid">
+              {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
+                <div key={f} className="form-group">
+                  <label className="form-label">{f.replace(/([A-Z])/g, ' $1').trim()}</label>
+                  <input type="text" className="form-input" value={warehouseAddress[f]} onChange={(e) => setWarehouseAddress((a) => ({ ...a, [f]: e.target.value }))} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* 3. Measurements */}
         <section className="create-order-card" ref={(el) => (sectionRefs.current.measurements = el)}>
-          <h3 className="create-order-card-title">3. Measurements</h3>
+          <h3 className="create-order-card-title"><IconMeasure /> 3. Measurements</h3>
           <div className="create-order-table-wrap">
             <table className="create-order-table">
               <thead>
@@ -293,7 +310,7 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
         {/* 4. Documents */}
         <section className="create-order-card" ref={(el) => (sectionRefs.current.documents = el)}>
-          <h3 className="create-order-card-title">4. Documents</h3>
+          <h3 className="create-order-card-title"><IconDoc /> 4. Documents</h3>
           <div
             className="create-order-dropzone"
             onDragOver={(e) => e.preventDefault()}
@@ -313,7 +330,7 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
         {/* 5. Legs */}
         <section className="create-order-card" ref={(el) => (sectionRefs.current.legs = el)}>
-          <h3 className="create-order-card-title">5. Legs</h3>
+          <h3 className="create-order-card-title"><IconLegs /> 5. Legs</h3>
           {!serviceType && <p className="create-order-hint">Select a service type to configure legs.</p>}
           {serviceType && legCount >= 1 && (
             <div className="create-order-legs">
@@ -362,7 +379,7 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
         {/* 6. Storage */}
         <section className="create-order-card" ref={(el) => (sectionRefs.current.storage = el)}>
-          <h3 className="create-order-card-title">6. Storage</h3>
+          <h3 className="create-order-card-title"><IconArchive /> 6. Storage</h3>
           <div className="create-order-form-grid">
             <div className="form-group">
               <label className="form-label">Terminal</label>
@@ -421,7 +438,7 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
         {/* 7. Notes */}
         <section className="create-order-card" ref={(el) => (sectionRefs.current.notes = el)}>
-          <h3 className="create-order-card-title">7. Notes</h3>
+          <h3 className="create-order-card-title"><IconPencil /> 7. Notes</h3>
           <div className="form-group">
             <label className="form-label">Special handling instructions, access codes, delivery notes</label>
             <textarea className="form-input create-order-notes-input" rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Enter any special handling instructions, access codes, delivery notes, etc." />

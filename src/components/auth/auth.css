@@ -8137,6 +8137,7 @@ html, body {
   padding: 1.25rem 1.5rem;
   box-shadow: 0 2px 12px var(--shadow-light), 0 1px 3px var(--shadow-medium);
   scroll-margin-top: 5rem;
+  overflow: hidden;
 }
 
 [data-theme="dark"] .create-order-card {
@@ -8145,16 +8146,32 @@ html, body {
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
+/* Active section card – stronger shadow when this section is being filled */
+.create-order-card-active {
+  box-shadow: 0 8px 24px var(--shadow-light), 0 4px 12px var(--shadow-medium), 0 0 0 2px var(--white-400);
+}
+[data-theme="dark"] .create-order-card-active {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 2px var(--white-500);
+}
+
+/* Section title – full-width header bar, clearly separate from fields */
 .create-order-card-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
+  margin: -1.25rem -1.5rem 1.25rem -1.5rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--white-200);
   border-bottom: 1px solid var(--white-400);
+  letter-spacing: 0.01em;
+}
+
+[data-theme="dark"] .create-order-card-title {
+  background: var(--white-300);
+  border-bottom-color: var(--white-500);
 }
 
 .create-order-card-title .create-order-icon {
@@ -8170,6 +8187,11 @@ html, body {
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 0.75rem 0;
+}
+
+.create-order-card-subtitle .create-order-icon {
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .create-order-card-subtitle .create-order-icon {

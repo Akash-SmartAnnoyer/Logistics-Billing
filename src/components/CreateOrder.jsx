@@ -144,8 +144,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
       <div className="create-order-content">
         {/* 1. Header + References – single section */}
-        <section className="create-order-card create-order-header-references-card" ref={(el) => (sectionRefs.current.references = el)}>
-          <h3 className="create-order-card-title"><IconHeader /> 1. Header &amp; References</h3>
+        <section className={`create-order-card create-order-header-references-card ${activeStep === 'references' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.references = el)}>
+          <h3 className="create-order-card-title"><IconHeader /> Header &amp; References</h3>
           <div className="create-order-form-grid">
             <div className="form-group">
               <label className="form-label"><IconService /> Service type</label>
@@ -215,8 +215,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
         </section>
 
         {/* 2a. From address – separate section */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.addresses = el)}>
-          <h3 className="create-order-card-title"><IconAddress /> 2. From address</h3>
+        <section className={`create-order-card ${activeStep === 'addresses' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.addresses = el)}>
+          <h3 className="create-order-card-title"><IconAddress /> From address</h3>
           {!serviceType && <p className="create-order-hint">Select a service type above to see address fields.</p>}
           {serviceType && (
             <div className="create-order-form-grid">
@@ -232,8 +232,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
         {/* 2b. To address – separate section (when multi leg) */}
         {serviceType && isMultiLeg && (
-          <section className="create-order-card" ref={(el) => (sectionRefs.current.toAddress = el)}>
-            <h3 className="create-order-card-title"><IconAddress /> 2. To address</h3>
+          <section className={`create-order-card ${activeStep === 'addresses' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.toAddress = el)}>
+            <h3 className="create-order-card-title"><IconAddress /> To address</h3>
             {needsWarehouse && (
               <p className="create-order-msg create-order-msg-info">Multi-leg with linehaul: second address may be warehouse. Warehouse address is optional below.</p>
             )}
@@ -250,8 +250,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
 
         {/* 2c. Warehouse address – separate section (when linehaul) */}
         {serviceType && needsWarehouse && (
-          <section className="create-order-card" ref={(el) => (sectionRefs.current.warehouseAddress = el)}>
-            <h3 className="create-order-card-title"><IconStorage /> 2. Warehouse address (if linehaul)</h3>
+          <section className={`create-order-card ${activeStep === 'addresses' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.warehouseAddress = el)}>
+            <h3 className="create-order-card-title"><IconStorage /> Warehouse address (if linehaul)</h3>
             <div className="create-order-form-grid">
               {['companyName', 'address', 'city', 'state', 'zip', 'contact', 'phone'].map((f) => (
                 <div key={f} className="form-group">
@@ -264,8 +264,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
         )}
 
         {/* 3. Measurements */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.measurements = el)}>
-          <h3 className="create-order-card-title"><IconMeasure /> 3. Measurements</h3>
+        <section className={`create-order-card ${activeStep === 'measurements' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.measurements = el)}>
+          <h3 className="create-order-card-title"><IconMeasure /> Measurements</h3>
           <div className="create-order-table-wrap">
             <table className="create-order-table">
               <thead>
@@ -309,8 +309,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
         </section>
 
         {/* 4. Documents */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.documents = el)}>
-          <h3 className="create-order-card-title"><IconDoc /> 4. Documents</h3>
+        <section className={`create-order-card ${activeStep === 'documents' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.documents = el)}>
+          <h3 className="create-order-card-title"><IconDoc /> Documents</h3>
           <div
             className="create-order-dropzone"
             onDragOver={(e) => e.preventDefault()}
@@ -329,8 +329,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
         </section>
 
         {/* 5. Legs */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.legs = el)}>
-          <h3 className="create-order-card-title"><IconLegs /> 5. Legs</h3>
+        <section className={`create-order-card ${activeStep === 'legs' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.legs = el)}>
+          <h3 className="create-order-card-title"><IconLegs /> Legs</h3>
           {!serviceType && <p className="create-order-hint">Select a service type to configure legs.</p>}
           {serviceType && legCount >= 1 && (
             <div className="create-order-legs">
@@ -378,8 +378,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
         </section>
 
         {/* 6. Storage */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.storage = el)}>
-          <h3 className="create-order-card-title"><IconArchive /> 6. Storage</h3>
+        <section className={`create-order-card ${activeStep === 'storage' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.storage = el)}>
+          <h3 className="create-order-card-title"><IconArchive /> Storage</h3>
           <div className="create-order-form-grid">
             <div className="form-group">
               <label className="form-label">Terminal</label>
@@ -437,8 +437,8 @@ const CreateOrder = ({ onCancel, onSave }) => {
         </section>
 
         {/* 7. Notes */}
-        <section className="create-order-card" ref={(el) => (sectionRefs.current.notes = el)}>
-          <h3 className="create-order-card-title"><IconPencil /> 7. Notes</h3>
+        <section className={`create-order-card ${activeStep === 'notes' ? 'create-order-card-active' : ''}`} ref={(el) => (sectionRefs.current.notes = el)}>
+          <h3 className="create-order-card-title"><IconPencil /> Notes</h3>
           <div className="form-group">
             <label className="form-label">Special handling instructions, access codes, delivery notes</label>
             <textarea className="form-input create-order-notes-input" rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Enter any special handling instructions, access codes, delivery notes, etc." />

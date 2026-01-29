@@ -14,7 +14,7 @@ const AUTH_ENDPOINTS = {
 const DUMMY_USERS = [
   {
     id: 1,
-    email: 'superadmin@tms.com',
+    email: 'superadmin@loginex.com',
     password: 'SuperAdmin123!',
     firstName: 'Super',
     lastName: 'Admin',
@@ -23,7 +23,7 @@ const DUMMY_USERS = [
   },
   {
     id: 2,
-    email: 'user@tms.com',
+    email: 'user@loginex.com',
     password: 'User123!',
     firstName: 'John',
     lastName: 'Doe',

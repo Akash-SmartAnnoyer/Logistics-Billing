@@ -348,7 +348,7 @@ const Products = () => {
                 </div>
                 <div className="modal-title-content">
                   <h3>Add New Product</h3>
-                  <p>Create a new product entry for your timber catalog</p>
+                  <p>Create a new product entry for your LogiNex catalog</p>
                 </div>
               </div>
               <button 

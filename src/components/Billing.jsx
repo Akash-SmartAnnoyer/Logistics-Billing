@@ -462,10 +462,10 @@ const Billing = () => {
               <div className="invoice-detail-content">
                 <div className="invoice-header">
                   <div className="invoice-info">
-                    <h4>Timber Depot</h4>
-                    <p>123 Timber Street, Wood City, WC 12345</p>
+                    <h4>LogiNex</h4>
+                    <p>123 LogiNex Way, Logistics City, LC 12345</p>
                     <p>Phone: +91 98765 43210</p>
-                    <p>Email: info@timberdepot.com</p>
+                    <p>Email: info@loginex.com</p>
                   </div>
                   <div className="invoice-details">
                     <h4>Invoice #{selectedInvoice.id}</h4>

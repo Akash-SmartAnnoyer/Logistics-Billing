@@ -4,6 +4,7 @@ import { authService } from '../services/authService';
 import { settingsService } from '../services/settingsService';
 import toast from 'react-hot-toast';
 import ThemeToggle from './common/ThemeToggle.jsx';
+import logiNexLogo from '../assets/logos/LogiNex-logo-Transparent.png';
 import './auth/auth.css';
 
 const SuperAdminDashboard = () => {
@@ -24,7 +25,7 @@ const SuperAdminDashboard = () => {
   const [showHeaderNav, setShowHeaderNav] = useState(settingsService.shouldShowHeaderNav());
   const [activeSettingsTab, setActiveSettingsTab] = useState('appearance');
   const [settingsFormData, setSettingsFormData] = useState({
-    systemName: 'TMS Billing System',
+    systemName: 'LogiNex',
     timezone: 'UTC',
     sessionTimeout: 30,
     passwordPolicy: 'Standard',
@@ -1014,7 +1015,7 @@ const SuperAdminDashboard = () => {
                               className="settings-form-input"
                               value={settingsFormData.systemName}
                               onChange={(e) => handleInputChange('systemName', e.target.value)}
-                              placeholder="TMS Billing System"
+                              placeholder="LogiNex"
                             />
                             <p className="settings-form-hint">Display name for your billing system</p>
                           </div>
@@ -1383,10 +1384,8 @@ const SuperAdminDashboard = () => {
       <aside className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${sidebarPinned ? 'pinned' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            {!sidebarCollapsed && <span className="sidebar-title">Super Admin</span>}
+            <img src={logiNexLogo} alt="LogiNex" className="sidebar-logo-img" />
+            {!sidebarCollapsed && <span className="sidebar-title">LogiNex</span>}
           </div>
           <button 
             className="sidebar-pin-btn"

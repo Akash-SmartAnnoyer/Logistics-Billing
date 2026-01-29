@@ -4,10 +4,10 @@ import './auth/auth.css';
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [settings, setSettings] = useState({
-    companyName: 'Timber Depot',
-    companyAddress: '123 Timber Street, Wood City, WC 12345',
+    companyName: 'LogiNex',
+    companyAddress: '123 LogiNex Way, Logistics City, LC 12345',
     companyPhone: '+91 98765 43210',
-    companyEmail: 'info@timberdepot.com',
+    companyEmail: 'info@loginex.com',
     currency: 'INR',
     taxRate: 18,
     invoicePrefix: 'INV',
@@ -36,10 +36,10 @@ const Settings = () => {
     if (window.confirm('Are you sure you want to reset all settings to default?')) {
       // Reset to default values
       setSettings({
-        companyName: 'Timber Depot',
-        companyAddress: '123 Timber Street, Wood City, WC 12345',
+        companyName: 'LogiNex',
+        companyAddress: '123 LogiNex Way, Logistics City, LC 12345',
         companyPhone: '+91 98765 43210',
-        companyEmail: 'info@timberdepot.com',
+        companyEmail: 'info@loginex.com',
         currency: 'INR',
         taxRate: 18,
         invoicePrefix: 'INV',
@@ -247,7 +247,7 @@ const Settings = () => {
           <input 
             type="email" 
             className="form-input" 
-            defaultValue="john.doe@timberdepot.com"
+            defaultValue="john.doe@loginex.com"
           />
         </div>
         <div className="form-group">

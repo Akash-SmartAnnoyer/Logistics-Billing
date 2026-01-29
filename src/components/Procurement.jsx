@@ -48,7 +48,7 @@ const Procurement = () => {
     },
     {
       id: 'PO-004',
-      vendor: 'Timber Depot Supply',
+      vendor: 'LogiNex Supply',
       product: 'Cedar Wood Panels',
       quantity: 75,
       unit: 'SQFT',
@@ -367,7 +367,7 @@ const Procurement = () => {
                 </div>
                 <div className="modal-title-content">
                   <h3>Add New Procurement Record</h3>
-                  <p>Create a new procurement order for your timber depot</p>
+                  <p>Create a new procurement order for your LogiNex</p>
                 </div>
               </div>
               <button 

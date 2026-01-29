@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { authService } from '../../services/authService';
 import { validateForm } from '../../helpers/validation';
 import { TOAST_MESSAGES } from '../../helpers/constants';
+import logiNexLogo from '../../assets/logos/LogiNex-logo-Transparent.png';
 import './auth.css';
 
 const AuthContainer = () => {
@@ -52,19 +53,18 @@ const AuthContainer = () => {
     <>
       <div className="auth-background"></div>
       <div className="auth-container">
-        <div className="auth-card-container">
-          {/* Auth Card */}
-          <div className="auth-card login-card">
-            {/* Header */}
-            <div className="auth-header">
-              <div className="auth-logo">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+        <div className="auth-layout">
+          <div className="auth-card-container">
+            {/* Auth Card */}
+            <div className="auth-card login-card">
+              {/* Header */}
+              <div className="auth-header">
+                <div className="auth-logo">
+                  <img src={logiNexLogo} alt="LogiNex" />
+                </div>
+                <h1 className="auth-title">Welcome Back</h1>
+                <p className="auth-subtitle">Sign in to your LogiNex account</p>
               </div>
-               <h1 className="auth-title">Welcome Back</h1>
-               <p className="auth-subtitle">Sign in to your TMS Billing account</p>
-            </div>
 
             {/* Form */}
             <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
@@ -75,7 +75,7 @@ const AuthContainer = () => {
                   {...register('email', { required: 'Email is required' })}
                   type="email"
                   className={`form-input ${errors.email ? 'error' : ''}`}
-                  placeholder="superadmin@tms.com"
+                  placeholder="superadmin@loginex.com"
                   disabled={isLoading}
                 />
                 {errors.email && (
@@ -151,23 +151,26 @@ const AuthContainer = () => {
                 )}
               </button>
             </form>
+          </div>
+        </div>
 
-            {/* Demo Credentials */}
-            <div className="demo-credentials">
-              <div className="demo-title">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 1 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                </svg>
-                Demo Credentials
-              </div>
-              <div className="demo-item">
-                <strong>Super Admin:</strong> superadmin@tms.com | SuperAdmin123!
-              </div>
-              <div className="demo-item">
-                <strong>User:</strong> user@tms.com | User123!
-              </div>
+        {/* Demo Credentials - Right side, removable later */}
+        <aside className="auth-demo-panel">
+          <div className="demo-credentials">
+            <div className="demo-title">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 1 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+              </svg>
+              Demo Credentials
+            </div>
+            <div className="demo-item">
+              <strong>Super Admin:</strong> superadmin@loginex.com | SuperAdmin123!
+            </div>
+            <div className="demo-item">
+              <strong>User:</strong> user@loginex.com | User123!
             </div>
           </div>
+        </aside>
         </div>
       </div>
     </>

@@ -1,14 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import './auth/auth.css';
-
-const SERVICE_TYPES = [
-  { value: 'pickup_only', label: 'Pickup only' },
-  { value: 'delivery_only', label: 'Delivery only' },
-  { value: 'pickup_delivery', label: 'Pickup + Delivery' },
-  { value: 'pickup_linehaul', label: 'Pickup + Linehaul (PU+LH)' },
-  { value: 'linehaul_delivery', label: 'Linehaul + Delivery (LH+DL)' },
-  { value: 'full_service', label: 'Full service (PU+LH+DL)' },
-];
+import ServiceTypeDropdown from './common/ServiceTypeDropdown';
 
 const MEASUREMENT_TYPES = ['BOX', 'PALLET', 'CRATE', 'ENVELOPE', 'TUBE', 'DRUM', 'OTHER'];
 
@@ -149,12 +141,11 @@ const CreateOrder = ({ onCancel, onSave }) => {
           <div className="create-order-form-grid">
             <div className="form-group">
               <label className="form-label"><IconService /> Service type</label>
-              <select className="form-input" value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
-                <option value="">Select service type</option>
-                {SERVICE_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+              <ServiceTypeDropdown
+                value={serviceType}
+                onChange={setServiceType}
+                placeholder="Select service type"
+              />
             </div>
             <div className="form-group">
               <label className="form-label"><IconShipper /> Shipper</label>
